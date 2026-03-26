@@ -50,6 +50,12 @@ class GpmapClient:
     def close(self) -> None:
         self._transport.close()
 
+    def __enter__(self) -> "GpmapClient":
+        return self
+
+    def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
+        self.close()
+
     def select_api(self, api: str = "production") -> None:
         if api == ApiEnvironment.PRODUCTION.value:
             self.set_base_url(PRODUCTION_BASE_URL)
