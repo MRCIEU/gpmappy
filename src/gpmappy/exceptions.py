@@ -26,3 +26,7 @@ class TimeoutError(GpmappyError):
 
 class NetworkError(GpmappyError):
     """Raised for transport/network failures."""
+
+
+class OptionalDependencyError(GpmappyError):
+    """Raised when an optional dependency is required but not installed."""

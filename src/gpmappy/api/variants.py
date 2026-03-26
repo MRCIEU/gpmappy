@@ -5,11 +5,11 @@ from __future__ import annotations
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import httpx
-import pandas as pd
 
+from gpmappy.parsers import read_tsv_gz_records
 from gpmappy.transport import HttpTransport
 
 
@@ -74,16 +74,15 @@ def variant_api(
 def variant_summary_stats_api(
     transport: HttpTransport,
     snp_id: str | int,
-) -> dict[str, pd.DataFrame]:
+) -> dict[str, list[dict[str, str]]]:
     payload = transport.request_bytes("GET", f"/v1/variants/{snp_id}/summary-stats")
     with tempfile.TemporaryDirectory(prefix="gpmappy_variant_") as tmpdir:
         zip_path = Path(tmpdir) / f"summary_stats_{snp_id}.zip"
         zip_path.write_bytes(payload)
-        dataframes: dict[str, pd.DataFrame] = {}
+        tables: dict[str, list[dict[str, str]]] = {}
         with zipfile.ZipFile(zip_path, "r") as zf:
             zf.extractall(tmpdir)
         for gz_path in Path(tmpdir).glob("*.tsv.gz"):
             key = gz_path.name.replace(".tsv.gz", "").replace("_with_lbfs", "")
-            df = cast(pd.DataFrame, pd.read_csv(gz_path, sep="\t"))  # type: ignore[arg-type]
-            dataframes[key] = df
-        return dataframes
+            tables[key] = read_tsv_gz_records(gz_path)
+        return tables

@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 import tempfile
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-import pandas as pd
-
+from gpmappy.parsers import read_tsv_gz_records
 from gpmappy.transport import HttpTransport
 
 
@@ -22,14 +21,14 @@ def get_gwas_api(
 def get_gwas_summary_stats_api(
     transport: HttpTransport,
     gwas_id: str,
-) -> pd.DataFrame:
+) -> list[dict[str, str]]:
     summary_stats_url_payload = transport.request_json("GET", f"/v1/gwas/{gwas_id}/summary-stats")
     summary_stats_url = str(summary_stats_url_payload.get("url", summary_stats_url_payload))
 
     with tempfile.TemporaryDirectory(prefix="gpmappy_gwas_") as tmpdir:
         file_path = Path(tmpdir) / f"gwas_summary_stats_{gwas_id}.tsv.gz"
         transport.download_to_path(summary_stats_url, file_path)
-        return cast(pd.DataFrame, pd.read_csv(file_path, sep="\t"))  # type: ignore[arg-type]
+        return read_tsv_gz_records(file_path)
 
 
 def upload_gwas_api(
