@@ -20,7 +20,7 @@ class ApiEnvironment(str, Enum):
     CUSTOM = "custom"
 
 
-@dataclass(slots=True)
+@dataclass
 class GpmapConfig:
     base_url: str = PRODUCTION_BASE_URL
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS
