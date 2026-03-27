@@ -1,15 +1,13 @@
-import pandas as pd
-
 from gpmappy.merge import merge_associations
 
 
 def test_merge_associations() -> None:
-    coloc = pd.DataFrame([{"study_id": 1, "snp_id": 2}])
-    rare = pd.DataFrame([{"study_id": 1, "snp_id": 2}])
-    assoc = pd.DataFrame([{"study_id": 1, "snp_id": 2, "beta": 0.1}])
+    coloc = [{"study_id": 1, "snp_id": 2}]
+    rare = [{"study_id": 1, "snp_id": 2}]
+    assoc = [{"study_id": 1, "snp_id": 2, "beta": 0.1}]
 
     coloc_new, rare_new = merge_associations(coloc, rare, assoc)
-    assert coloc_new is not None
-    assert rare_new is not None
-    assert "beta" in coloc_new.columns
-    assert "beta" in rare_new.columns
+    assert isinstance(coloc_new, list)
+    assert isinstance(rare_new, list)
+    assert coloc_new[0]["beta"] == 0.1
+    assert rare_new[0]["beta"] == 0.1
