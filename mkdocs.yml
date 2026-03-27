@@ -1,0 +1,17 @@
+site_name: gpmappy
+site_url: https://MRCIEU.github.io/gpmappy/
+repo_url: https://github.com/MRCIEU/gpmappy
+repo_name: MRCIEU/gpmappy
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quickstart: quickstart.md
+  - API Reference: api_reference.md
+  - Migration from gpmapr: migration_from_gpmapr.md
+  - PyPI Release: pypi_release.md
+
+docs_dir: docs

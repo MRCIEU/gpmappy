@@ -10,7 +10,10 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
 authors = [
-  { name = "gpmappy contributors" }
+  { name = "gpt-5.3-codex" },
+  { name = "t0mrg" },
+  { name = "andrew-e" },
+  { name = "explodecomputer" }
 ]
 keywords = ["genetics", "gwas", "opengwas", "api", "bioinformatics"]
 classifiers = [
@@ -31,10 +34,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/gpmappy"
-Repository = "https://github.com/your-org/gpmappy"
-Issues = "https://github.com/your-org/gpmappy/issues"
-Documentation = "https://your-org.github.io/gpmappy/"
+Homepage = "https://github.com/MRCIEU/gpmappy"
+Repository = "https://github.com/MRCIEU/gpmappy"
+Issues = "https://github.com/MRCIEU/gpmappy/issues"
+Documentation = "https://MRCIEU.github.io/gpmappy/"
+Changelog = "https://github.com/MRCIEU/gpmappy/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dataframe = [
@@ -50,7 +54,9 @@ dev = [
   "ruff>=0.1.0",
   "black>=23.0.0",
   "mypy>=1.5.0",
-  "pre-commit>=3.7.0"
+  "pre-commit>=3.7.0",
+  "build>=1.0.0",
+  "twine>=4.0.0"
 ]
 docs = [
   "mkdocs>=1.4.0",
@@ -97,7 +103,7 @@ module = ["pandas.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "7.2"
 addopts = "-ra --strict-markers --strict-config --cov=gpmappy --cov-report=term-missing --cov-report=xml"
 testpaths = ["tests"]
 markers = [

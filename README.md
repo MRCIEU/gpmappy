@@ -54,3 +54,19 @@ pip install --force-reinstall pandas
 
 If you use Conda, prefer either all-conda or all-pip installs for numeric packages in a
 given environment to avoid ABI conflicts.
+
+## Maintainer: PyPI publication
+
+This repository includes a GitHub Actions publish workflow at
+`.github/workflows/release.yml` using Trusted Publisher (OIDC) for TestPyPI and PyPI.
+
+Before first release, configure Trusted Publisher settings and follow
+`docs/pypi_release.md`.
+
+## Maintainer: docs publication
+
+Documentation is built with MkDocs and deployed to GitHub Pages via
+`.github/workflows/docs.yml`.
+
+In repository settings, ensure Pages is configured to use **GitHub Actions** as
+the source.

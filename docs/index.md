@@ -14,3 +14,4 @@
 - `quickstart.md`
 - `api_reference.md`
 - `migration_from_gpmapr.md`
+- `pypi_release.md`
