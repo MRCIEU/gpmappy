@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
-
 from gpmappy.client import GpmapClient
+from gpmappy.tabular import TableLike
 
 _default_client = GpmapClient()
 
@@ -32,12 +31,12 @@ def version_api() -> str:
     return _default_client.version_api()
 
 
-def search_gpmap(search_text: str, rsquared_threshold: float = 0.8) -> pd.DataFrame:
-    return _default_client.search_gpmap(search_text, rsquared_threshold)
+def search_gpmap(search_text: str, rsquared_threshold: float = 0.8, as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.search_gpmap(search_text, rsquared_threshold, as_dataframe=as_dataframe)
 
 
-def all_traits() -> pd.DataFrame:
-    return _default_client.all_traits()
+def all_traits(as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.all_traits(as_dataframe=as_dataframe)
 
 
 def trait(
@@ -45,8 +44,15 @@ def trait(
     include_associations: bool = False,
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
-    return _default_client.trait(trait_id, include_associations, include_coloc_pairs, h4_threshold)
+    return _default_client.trait(
+        trait_id,
+        include_associations=include_associations,
+        include_coloc_pairs=include_coloc_pairs,
+        h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
+    )
 
 
 def traits(
@@ -54,12 +60,19 @@ def traits(
     include_associations: bool = False,
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
-    return _default_client.traits(trait_ids, include_associations, include_coloc_pairs, h4_threshold)
+    return _default_client.traits(
+        trait_ids,
+        include_associations=include_associations,
+        include_coloc_pairs=include_coloc_pairs,
+        h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
+    )
 
 
-def all_genes() -> pd.DataFrame:
-    return _default_client.all_genes()
+def all_genes(as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.all_genes(as_dataframe=as_dataframe)
 
 
 def gene(
@@ -68,6 +81,7 @@ def gene(
     include_coloc_pairs: bool = False,
     include_trans: bool = True,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
     return _default_client.gene(
         gene_id,
@@ -75,6 +89,7 @@ def gene(
         include_coloc_pairs=include_coloc_pairs,
         include_trans=include_trans,
         h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
     )
 
 
@@ -84,6 +99,7 @@ def genes(
     include_coloc_pairs: bool = False,
     include_trans: bool = True,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
     return _default_client.genes(
         gene_ids,
@@ -91,6 +107,7 @@ def genes(
         include_coloc_pairs=include_coloc_pairs,
         include_trans=include_trans,
         h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
     )
 
 
@@ -99,12 +116,14 @@ def variant(
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
     include_summary_stats: bool = False,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
     return _default_client.variant(
         snp_id,
         include_coloc_pairs=include_coloc_pairs,
         h4_threshold=h4_threshold,
         include_summary_stats=include_summary_stats,
+        as_dataframe=as_dataframe,
     )
 
 
@@ -114,6 +133,7 @@ def variants(
     include_associations: bool = False,
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
     return _default_client.variants(
         variants,
@@ -121,6 +141,7 @@ def variants(
         include_associations=include_associations,
         include_coloc_pairs=include_coloc_pairs,
         h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
     )
 
 
@@ -129,8 +150,15 @@ def region(
     include_associations: bool = False,
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
+    as_dataframe: bool | None = None,
 ) -> dict[str, Any]:
-    return _default_client.region(region_id, include_associations, include_coloc_pairs, h4_threshold)
+    return _default_client.region(
+        region_id,
+        include_associations=include_associations,
+        include_coloc_pairs=include_coloc_pairs,
+        h4_threshold=h4_threshold,
+        as_dataframe=as_dataframe,
+    )
 
 
 def ld_matrix(variant_ids: list[str | int]) -> dict[str, Any]:
@@ -141,20 +169,24 @@ def ld_proxies(variant_ids: list[str | int]) -> dict[str, Any]:
     return _default_client.ld_proxies(variant_ids)
 
 
-def associations(snp_ids: list[int], study_ids: list[int]) -> pd.DataFrame:
-    return _default_client.associations(snp_ids, study_ids)
+def associations(snp_ids: list[int], study_ids: list[int], as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.associations(snp_ids, study_ids, as_dataframe=as_dataframe)
 
 
-def get_all_gene_pleiotropies() -> pd.DataFrame:
-    return _default_client.get_all_gene_pleiotropies()
+def get_all_gene_pleiotropies(as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.get_all_gene_pleiotropies(as_dataframe=as_dataframe)
 
 
-def get_all_snp_pleiotropies() -> pd.DataFrame:
-    return _default_client.get_all_snp_pleiotropies()
+def get_all_snp_pleiotropies(as_dataframe: bool | None = None) -> TableLike:
+    return _default_client.get_all_snp_pleiotropies(as_dataframe=as_dataframe)
 
 
-def get_gwas(gwas_id: str, include_summary_stats: bool = False) -> dict[str, Any]:
-    return _default_client.get_gwas(gwas_id, include_summary_stats=include_summary_stats)
+def get_gwas(
+    gwas_id: str,
+    include_summary_stats: bool = False,
+    as_dataframe: bool | None = None,
+) -> dict[str, Any]:
+    return _default_client.get_gwas(gwas_id, include_summary_stats=include_summary_stats, as_dataframe=as_dataframe)
 
 
 def upload_gwas(
