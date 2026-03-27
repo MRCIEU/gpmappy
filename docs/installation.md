@@ -14,3 +14,11 @@ pip install -e ".[dev]"
 ```bash
 pip install .
 ```
+
+## Install with DataFrame support
+
+```bash
+pip install "gpmappy[dataframe]"
+```
+
+Without the `dataframe` extra, methods return list-of-dict tables by default.

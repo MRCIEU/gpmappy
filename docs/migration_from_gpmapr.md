@@ -13,4 +13,5 @@
 
 - Snake_case naming is preserved where already present.
 - Module wrappers and `GpmapClient` class are both supported.
-- Tabular outputs are returned as pandas DataFrames.
+- Tabular outputs auto-convert to pandas DataFrames when pandas is installed.
+- Set `as_dataframe=False` on supported methods for a pure list-of-dict output.

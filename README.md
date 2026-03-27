@@ -30,6 +30,12 @@ Install as a regular local package:
 pip install .
 ```
 
+Install full tabular support from a release:
+
+```bash
+pip install "gpmappy[dataframe]"
+```
+
 ## Quick check
 
 ```bash
@@ -45,3 +51,6 @@ reinstall compatible numeric dependencies:
 pip install --force-reinstall "numpy<2"
 pip install --force-reinstall pandas
 ```
+
+If you use Conda, prefer either all-conda or all-pip installs for numeric packages in a
+given environment to avoid ABI conflicts.
