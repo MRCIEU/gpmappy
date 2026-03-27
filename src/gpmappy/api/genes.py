@@ -13,7 +13,7 @@ def genes_api(transport: HttpTransport) -> dict[str, Any]:
     return transport.request_json("GET", "/v1/genes")
 
 
-def specific_genes_api(
+def specific_genes_api(  # noqa: PLR0913
     transport: HttpTransport,
     gene_ids: list[str],
     include_associations: bool = False,
@@ -33,7 +33,7 @@ def specific_genes_api(
     return transport.request_json("GET", "/v1/genes", params=httpx.QueryParams(params))
 
 
-def gene_api(
+def gene_api(  # noqa: PLR0913
     transport: HttpTransport,
     gene_id: str,
     include_associations: bool = False,

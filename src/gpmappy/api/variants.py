@@ -13,7 +13,7 @@ from gpmappy.parsers import read_tsv_gz_records
 from gpmappy.transport import HttpTransport
 
 
-def variants_api(
+def variants_api(  # noqa: PLR0913
     transport: HttpTransport,
     variants: list[str | int],
     expand: bool = False,
@@ -33,7 +33,7 @@ def variants_api(
     return transport.request_json("GET", "/v1/variants", params=httpx.QueryParams(params))
 
 
-def variants_grange_api(
+def variants_grange_api(  # noqa: PLR0913
     transport: HttpTransport,
     chr_value: str,
     start: int,

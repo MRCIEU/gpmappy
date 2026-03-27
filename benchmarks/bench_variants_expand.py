@@ -1,4 +1,5 @@
 import time
+from contextlib import suppress
 
 from gpmappy.client import GpmapClient
 
@@ -8,17 +9,13 @@ def main() -> None:
     variants = [5553693, 5553694]
 
     start = time.time()
-    try:
+    with suppress(Exception):
         client.variants(variants, expand=False)
-    except Exception:
-        pass
     no_expand = time.time() - start
 
     start = time.time()
-    try:
+    with suppress(Exception):
         client.variants(variants, expand=True)
-    except Exception:
-        pass
     expand = time.time() - start
 
     print(f"expand_false={no_expand:.4f}s expand_true={expand:.4f}s")

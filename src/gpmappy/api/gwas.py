@@ -31,7 +31,7 @@ def get_gwas_summary_stats_api(
         return read_tsv_gz_records(file_path)
 
 
-def upload_gwas_api(
+def upload_gwas_api(  # noqa: PLR0913
     transport: HttpTransport,
     file: str,
     name: str,

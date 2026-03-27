@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 GUID_PATTERN = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 )
+INLINE_STUDY_CHUNKS = 2
 
 
 def is_guid(value: str | int) -> bool:
@@ -16,15 +17,16 @@ def is_guid(value: str | int) -> bool:
 
 
 def cleanup_api_object(api_object: dict[str, object]) -> dict[str, object]:
-    return {k: v for k, v in api_object.items() if v is not None and v != [] and v != {}}
+    return {k: v for k, v in api_object.items() if v not in (None, [], {})}
 
 
 def create_source_url(study_name: str) -> str:
     chunks = study_name.split("-")
-    if len(chunks) <= 2:
-        token = study_name
-    else:
-        token = "-".join(chunks[:2] + ["_".join(chunks[2:])])
+    token = (
+        study_name
+        if len(chunks) <= INLINE_STUDY_CHUNKS
+        else "-".join([*chunks[:INLINE_STUDY_CHUNKS], "_".join(chunks[INLINE_STUDY_CHUNKS:])])
+    )
     return f"https://opengwas.io/datasets/{token}"
 
 

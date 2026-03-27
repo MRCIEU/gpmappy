@@ -1,4 +1,5 @@
 import time
+from contextlib import suppress
 
 from gpmappy.client import GpmapClient
 
@@ -6,17 +7,13 @@ from gpmappy.client import GpmapClient
 def main() -> None:
     client = GpmapClient()
     start = time.time()
-    try:
+    with suppress(Exception):
         client.search_gpmap("haemoglobin")
-    except Exception:
-        pass
     first = time.time() - start
 
     start = time.time()
-    try:
+    with suppress(Exception):
         client.search_gpmap("haemoglobin")
-    except Exception:
-        pass
     second = time.time() - start
 
     print(f"first={first:.4f}s second={second:.4f}s")

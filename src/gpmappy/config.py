@@ -29,7 +29,7 @@ class GpmapConfig:
     user_agent: str = "gpmappy/0.1.0"
 
     @staticmethod
-    def from_environment(api: str) -> "GpmapConfig":
+    def from_environment(api: str) -> GpmapConfig:
         if api == ApiEnvironment.DEV.value:
             return GpmapConfig(base_url=DEV_BASE_URL)
         if api == ApiEnvironment.PRODUCTION.value:

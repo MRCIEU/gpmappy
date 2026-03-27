@@ -29,6 +29,8 @@ from gpmappy.tabular import TableLike, records_to_table
 from gpmappy.transport import HttpTransport
 from gpmappy.utils import cleanup_api_object, create_source_url, is_guid
 
+MAX_GWAS_PVALUE_THRESHOLD = 1e-5
+
 
 class GpmapClient:
     def __init__(self, config: GpmapConfig | None = None) -> None:
@@ -49,7 +51,7 @@ class GpmapClient:
     def close(self) -> None:
         self._transport.close()
 
-    def __enter__(self) -> "GpmapClient":
+    def __enter__(self) -> GpmapClient:
         return self
 
     def __exit__(self, exc_type: object, exc_value: object, traceback: object) -> None:
@@ -83,19 +85,29 @@ class GpmapClient:
 
     def all_traits(self, as_dataframe: bool | None = None) -> TableLike:
         payload = traits_api(self._transport)
-        return records_to_table(_ensure_record_list(payload.get("traits")), as_dataframe=as_dataframe)
+        return records_to_table(
+            _ensure_record_list(payload.get("traits")), as_dataframe=as_dataframe
+        )
 
     def all_genes(self, as_dataframe: bool | None = None) -> TableLike:
         payload = genes_api(self._transport)
-        return records_to_table(_ensure_record_list(payload.get("genes")), as_dataframe=as_dataframe)
+        return records_to_table(
+            _ensure_record_list(payload.get("genes")), as_dataframe=as_dataframe
+        )
 
-    def associations(self, snp_ids: list[int], study_ids: list[int], as_dataframe: bool | None = None) -> TableLike:
+    def associations(
+        self, snp_ids: list[int], study_ids: list[int], as_dataframe: bool | None = None
+    ) -> TableLike:
         payload = associations_api(self._transport, snp_ids=snp_ids, study_ids=study_ids)
-        return records_to_table(_ensure_record_list(payload.get("associations")), as_dataframe=as_dataframe)
+        return records_to_table(
+            _ensure_record_list(payload.get("associations")), as_dataframe=as_dataframe
+        )
 
     def get_all_gene_pleiotropies(self, as_dataframe: bool | None = None) -> TableLike:
         payload = gene_pleiotropies_api(self._transport)
-        return records_to_table(_ensure_record_list(payload.get("genes")), as_dataframe=as_dataframe)
+        return records_to_table(
+            _ensure_record_list(payload.get("genes")), as_dataframe=as_dataframe
+        )
 
     def get_all_snp_pleiotropies(self, as_dataframe: bool | None = None) -> TableLike:
         payload = snp_pleiotropies_api(self._transport)
@@ -116,11 +128,15 @@ class GpmapClient:
             trait_info = get_gwas_api(self._transport, str(trait_id))
             coloc_trait_id = trait_info.get("trait", {}).get("id", trait_id)
         else:
-            trait_info = trait_api(self._transport, trait_id, include_associations=include_associations)
+            trait_info = trait_api(
+                self._transport, trait_id, include_associations=include_associations
+            )
             coloc_trait_id = trait_id
 
         if include_coloc_pairs and not is_guid(coloc_trait_id):
-            trait_info["coloc_pairs"] = trait_coloc_pairs_api(self._transport, coloc_trait_id, h4_threshold)
+            trait_info["coloc_pairs"] = trait_coloc_pairs_api(
+                self._transport, coloc_trait_id, h4_threshold
+            )
 
         if include_associations and "associations" in trait_info:
             merged_coloc, merged_rare = merge_associations(
@@ -171,7 +187,9 @@ class GpmapClient:
             result.update(payload)
 
             if include_coloc_pairs:
-                coloc_pairs = [trait_coloc_pairs_api(self._transport, tid, h4_threshold) for tid in numeric_ids]
+                coloc_pairs = [
+                    trait_coloc_pairs_api(self._transport, tid, h4_threshold) for tid in numeric_ids
+                ]
                 result["coloc_pairs"] = coloc_pairs
 
         for guid in guid_ids:
@@ -182,7 +200,7 @@ class GpmapClient:
 
         return _coerce_tabular(cleanup_api_object(result), as_dataframe)
 
-    def gene(
+    def gene(  # noqa: PLR0913
         self,
         gene_id: str,
         include_associations: bool = False,
@@ -212,7 +230,7 @@ class GpmapClient:
         result.pop("tissues", None)
         return _coerce_tabular(cleanup_api_object(result), as_dataframe)
 
-    def genes(
+    def genes(  # noqa: PLR0913
         self,
         gene_ids: list[str],
         include_associations: bool = False,
@@ -299,7 +317,7 @@ class GpmapClient:
             result["rare_results"] = merged_rare
         return _coerce_tabular(cleanup_api_object(result), as_dataframe)
 
-    def variants(
+    def variants(  # noqa: PLR0913
         self,
         variants: list[str | int],
         expand: bool = False,
@@ -359,7 +377,7 @@ class GpmapClient:
             result["summary_stats"] = get_gwas_summary_stats_api(self._transport, gwas_id)
         return _coerce_tabular(cleanup_api_object(result), as_dataframe)
 
-    def upload_gwas(
+    def upload_gwas(  # noqa: PLR0913
         self,
         file: str,
         name: str,
@@ -549,7 +567,7 @@ def _dedupe_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return deduped
 
 
-def _validate_upload(
+def _validate_upload(  # noqa: PLR0913
     *,
     file: str,
     name: str,
@@ -573,7 +591,7 @@ def _validate_upload(
         raise ValidationError("ancestry must be EUR")
     if reference_build not in {"GRCh37", "GRCh38"}:
         raise ValidationError("reference_build must be GRCh37 or GRCh38")
-    if p_value_threshold <= 0 or p_value_threshold > 1e-5:
+    if p_value_threshold <= 0 or p_value_threshold > MAX_GWAS_PVALUE_THRESHOLD:
         raise ValidationError("p_value_threshold must be in (0, 1e-5]")
     if sample_size is None or float(sample_size) <= 0:
         raise ValidationError("sample_size must be a positive number")

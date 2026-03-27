@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
+from gpmappy import tabular
 from gpmappy.client import GpmapClient
 from gpmappy.exceptions import OptionalDependencyError
-import gpmappy.tabular as tabular
 
 
 def test_all_genes_returns_list_when_dataframe_disabled(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -12,6 +12,9 @@ from httpx._types import QueryParamTypes
 
 from gpmappy.exceptions import ApiError, NetworkError, TimeoutError
 
+HTTP_BAD_REQUEST = 400
+HTTP_SERVER_ERROR = 500
+
 
 class HttpTransport:
     def __init__(
@@ -73,7 +76,7 @@ class HttpTransport:
         path.write_bytes(response.content)
         return path
 
-    def _request(
+    def _request(  # noqa: PLR0913
         self,
         method: str,
         path: str,
@@ -104,8 +107,8 @@ class HttpTransport:
                 time.sleep(self.backoff_factor * (2**attempt))
                 continue
 
-            if response.status_code >= 400:
-                if attempt == self.max_retries or response.status_code < 500:
+            if response.status_code >= HTTP_BAD_REQUEST:
+                if attempt == self.max_retries or response.status_code < HTTP_SERVER_ERROR:
                     message = response.text
                     raise ApiError(response.status_code, message)
                 time.sleep(self.backoff_factor * (2**attempt))

@@ -9,7 +9,9 @@ import httpx
 from gpmappy.transport import HttpTransport
 
 
-def ld_proxies_by_variant_api(transport: HttpTransport, variants: list[str | int]) -> dict[str, Any]:
+def ld_proxies_by_variant_api(
+    transport: HttpTransport, variants: list[str | int]
+) -> dict[str, Any]:
     params = httpx.QueryParams([("variants", str(v)) for v in variants])
     return transport.request_json("GET", "/v1/ld/proxies", params=params)
 
