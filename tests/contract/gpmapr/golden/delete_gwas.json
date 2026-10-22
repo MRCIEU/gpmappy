@@ -1,0 +1,21 @@
+{
+  "id": "delete_gwas",
+  "function": "delete_gwas",
+  "requests": [
+    {
+      "method": "DELETE",
+      "path": "/v1/gwas/0f0e0d0c-0b0a-4908-8706-050403020100",
+      "query": {},
+      "body": {
+        "email": "user@example.com"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "message": "GWAS upload 0f0e0d0c-0b0a-4908-8706-050403020100 deleted"
+    }
+  }
+}

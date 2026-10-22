@@ -70,6 +70,15 @@ class DummyClient:
     def get_all_snp_pleiotropies(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         return self._record("get_all_snp_pleiotropies", *args, **kwargs)
 
+    def get_all_variant_pleiotropies(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        return self._record("get_all_variant_pleiotropies", *args, **kwargs)
+
+    def trait_duplicates(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        return self._record("trait_duplicates", *args, **kwargs)
+
+    def delete_gwas(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+        return self._record("delete_gwas", *args, **kwargs)
+
     def get_gwas(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         return self._record("get_gwas", *args, **kwargs)
 
@@ -88,7 +97,8 @@ def test_wrappers_delegate_to_default_client() -> None:
 
         assert w.search_gpmap("BRCA1", 0.7, as_dataframe=True)["method"] == "search_gpmap"
         assert w.all_traits(as_dataframe=False)["method"] == "all_traits"
-        assert w.trait(1, True, True, 0.9, None)["method"] == "trait"
+        assert w.trait(1, True, True, True, 0.9, None)["method"] == "trait"
+        assert w.trait_duplicates(False)["method"] == "trait_duplicates"
         assert w.traits([1, 2], False, False, 0.8, True)["method"] == "traits"
 
         assert w.all_genes()["method"] == "all_genes"
@@ -105,7 +115,9 @@ def test_wrappers_delegate_to_default_client() -> None:
         assert w.associations([1, 2], [10, 11], None)["method"] == "associations"
         assert w.get_all_gene_pleiotropies(True)["method"] == "get_all_gene_pleiotropies"
         assert w.get_all_snp_pleiotropies(False)["method"] == "get_all_snp_pleiotropies"
-        assert w.get_gwas("ieu-a-2", True, None)["method"] == "get_gwas"
+        assert w.get_all_variant_pleiotropies(False)["method"] == "get_all_variant_pleiotropies"
+        assert w.get_gwas("ieu-a-2", True, True, None)["method"] == "get_gwas"
+        assert w.delete_gwas("guid", "a@b.com")["method"] == "delete_gwas"
 
         upload = w.upload_gwas(
             file="x.tsv",
@@ -120,6 +132,8 @@ def test_wrappers_delegate_to_default_client() -> None:
             ancestry="EUR",
             sample_size=123,
             reference_build="GRCh38",
+            compare_with_upload_guids=None,
+            chr_col="chr",
         )
         assert upload["method"] == "upload_gwas"
 

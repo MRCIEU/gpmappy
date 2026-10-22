@@ -1,0 +1,7 @@
+{
+  "id": "delete_gwas_blank_email",
+  "function": "delete_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "email is required"
+}

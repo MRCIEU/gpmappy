@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gpmappy"
-version = "0.1.1"
+version = "0.2.0"
 description = "Python client for the OpenGWAS genotype-phenotype map API"
 readme = "PYPI.md"
 license = { text = "MIT" }
@@ -78,7 +78,8 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "C4", "PL", "RUF"]
-ignore = ["E501"]
+# PLR0917: public functions take positional arguments in the same order as gpmapr.
+ignore = ["E501", "PLR0917"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["gpmappy"]

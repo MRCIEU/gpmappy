@@ -20,6 +20,18 @@ class ApiError(GpmappyError):
         self.message = message
 
 
+class RateLimitError(ApiError):
+    """Raised when the API keeps responding 429 (Too Many Requests) after all retries."""
+
+    def __init__(self, retries: int) -> None:
+        super().__init__(
+            429,
+            f"GPMap API rate limit exceeded after {retries} retries. "
+            "Please wait a moment and try again.",
+        )
+        self.retries = retries
+
+
 class TimeoutError(GpmappyError):
     """Raised when a request times out."""
 

@@ -1,0 +1,17 @@
+{
+  "id": "region_without_association_payload",
+  "function": "region",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/regions/1355",
+      "query": {
+        "h4_threshold": "0.8",
+        "include_associations": "true",
+        "include_coloc_pairs": "false"
+      }
+    }
+  ],
+  "warnings": [],
+  "error": "multi-argument returns are not permitted"
+}

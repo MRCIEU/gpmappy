@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
+from typing import Any
 from urllib.parse import urlencode
 
 GUID_PATTERN = re.compile(
@@ -33,3 +34,8 @@ def create_source_url(study_name: str) -> str:
 def build_multi_params(name: str, values: Iterable[str | int]) -> str:
     payload = [(name, str(v)) for v in values]
     return urlencode(payload)
+
+
+def rows_to_records(columns: Sequence[str], rows: Sequence[Sequence[Any]]) -> list[dict[str, Any]]:
+    """Turn the API's compact ``*_column_names`` + ``*_rows`` payloads into records."""
+    return [dict(zip(columns, row)) for row in rows]

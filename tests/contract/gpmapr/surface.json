@@ -1,0 +1,514 @@
+{
+  "package": "gpmapr",
+  "version": "0.0.2.0",
+  "exports": [
+    {
+      "name": "all_genes",
+      "params": []
+    },
+    {
+      "name": "all_traits",
+      "params": []
+    },
+    {
+      "name": "associations",
+      "params": [
+        {
+          "name": "variant_ids",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "study_ids",
+          "required": true,
+          "default": null,
+          "r_default": null
+        }
+      ]
+    },
+    {
+      "name": "delete_gwas",
+      "params": [
+        {
+          "name": "gwas_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "email",
+          "required": true,
+          "default": null,
+          "r_default": null
+        }
+      ]
+    },
+    {
+      "name": "gene",
+      "params": [
+        {
+          "name": "gene_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_trans",
+          "required": false,
+          "default": true,
+          "r_default": "TRUE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "genes",
+      "params": [
+        {
+          "name": "gene_ids",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_trans",
+          "required": false,
+          "default": true,
+          "r_default": "TRUE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "get_all_gene_pleiotropies",
+      "params": []
+    },
+    {
+      "name": "get_all_variant_pleiotropies",
+      "params": []
+    },
+    {
+      "name": "get_gwas",
+      "params": [
+        {
+          "name": "gwas_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_summary_stats",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        }
+      ]
+    },
+    {
+      "name": "health_api",
+      "params": []
+    },
+    {
+      "name": "ld_matrix",
+      "params": [
+        {
+          "name": "variant_ids",
+          "required": false,
+          "default": null,
+          "r_default": "c()"
+        }
+      ]
+    },
+    {
+      "name": "ld_proxies",
+      "params": [
+        {
+          "name": "variant_ids",
+          "required": false,
+          "default": null,
+          "r_default": "c()"
+        }
+      ]
+    },
+    {
+      "name": "region",
+      "params": [
+        {
+          "name": "region_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "search_gpmap",
+      "params": [
+        {
+          "name": "search_text",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "rsquared_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "trait",
+      "params": [
+        {
+          "name": "trait_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_full_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "trait_duplicates",
+      "params": []
+    },
+    {
+      "name": "traits",
+      "params": [
+        {
+          "name": "trait_ids",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    },
+    {
+      "name": "upload_gwas",
+      "params": [
+        {
+          "name": "file",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "name",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "p_value_threshold",
+          "required": false,
+          "default": 5e-08,
+          "r_default": "5e-08"
+        },
+        {
+          "name": "column_names",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "email",
+          "required": false,
+          "default": null,
+          "r_default": "NA"
+        },
+        {
+          "name": "category",
+          "required": false,
+          "default": "continuous",
+          "r_default": "\"continuous\""
+        },
+        {
+          "name": "is_published",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "doi",
+          "required": false,
+          "default": null,
+          "r_default": "NA"
+        },
+        {
+          "name": "should_be_added",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "ancestry",
+          "required": false,
+          "default": "EUR",
+          "r_default": "\"EUR\""
+        },
+        {
+          "name": "sample_size",
+          "required": false,
+          "default": null,
+          "r_default": "NA"
+        },
+        {
+          "name": "reference_build",
+          "required": false,
+          "default": "GRCh38",
+          "r_default": "\"GRCh38\""
+        },
+        {
+          "name": "compare_with_upload_guids",
+          "required": false,
+          "default": null,
+          "r_default": "NA"
+        },
+        {
+          "name": "chr_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "bp_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "ea_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "oa_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "p_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "eaf_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "beta_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "se_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "or_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "or_lb_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "or_ub_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "snp_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "rsid_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        }
+      ]
+    },
+    {
+      "name": "variant",
+      "params": [
+        {
+          "name": "variant_id",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        },
+        {
+          "name": "include_summary_stats",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        }
+      ]
+    },
+    {
+      "name": "variants",
+      "params": [
+        {
+          "name": "variants",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "expand",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_associations",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "include_coloc_pairs",
+          "required": false,
+          "default": false,
+          "r_default": "FALSE"
+        },
+        {
+          "name": "h4_threshold",
+          "required": false,
+          "default": 0.8,
+          "r_default": "0.8"
+        }
+      ]
+    }
+  ]
+}

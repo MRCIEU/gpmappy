@@ -1,0 +1,48 @@
+{
+  "id": "ld_proxies_by_variant_id",
+  "function": "ld_proxies",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/ld/proxies",
+      "query": {
+        "variant_ids": "5553693"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "lds": {
+        "kind": "table",
+        "columns": [
+          "ld_block_id",
+          "lead_variant_id",
+          "proxy_variant_id",
+          "r"
+        ],
+        "rows": [
+          {
+            "lead_variant_id": 5553693,
+            "proxy_variant_id": 5553688,
+            "ld_block_id": 1354,
+            "r": 0.941118001937866
+          },
+          {
+            "lead_variant_id": 5553693,
+            "proxy_variant_id": 5553689,
+            "ld_block_id": 1354,
+            "r": 0.940904021263123
+          },
+          {
+            "lead_variant_id": 5553693,
+            "proxy_variant_id": 5553736,
+            "ld_block_id": 1354,
+            "r": 0.933318018913269
+          }
+        ]
+      }
+    }
+  }
+}

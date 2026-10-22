@@ -1,0 +1,42 @@
+{
+  "id": "ld_matrix_by_rsid",
+  "function": "ld_matrix",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/ld/matrix",
+      "query": {
+        "variants": ["rs28971325", "rs9330813"]
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "lds": {
+        "kind": "table",
+        "columns": [
+          "ld_block_id",
+          "lead_variant_id",
+          "proxy_variant_id",
+          "r"
+        ],
+        "rows": [
+          {
+            "lead_variant_id": 5553693,
+            "proxy_variant_id": 5553694,
+            "ld_block_id": 1354,
+            "r": 0.83
+          },
+          {
+            "lead_variant_id": 5553694,
+            "proxy_variant_id": 5553693,
+            "ld_block_id": 1354,
+            "r": 0.83
+          }
+        ]
+      }
+    }
+  }
+}

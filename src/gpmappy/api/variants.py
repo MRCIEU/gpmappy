@@ -57,13 +57,13 @@ def variants_grange_api(  # noqa: PLR0913
 
 def variant_api(
     transport: HttpTransport,
-    snp_id: str | int,
+    variant_id: str | int,
     include_coloc_pairs: bool = False,
     h4_threshold: float = 0.8,
 ) -> dict[str, Any]:
     return transport.request_json(
         "GET",
-        f"/v1/variants/{snp_id}",
+        f"/v1/variants/{variant_id}",
         params={
             "include_coloc_pairs": str(include_coloc_pairs).lower(),
             "h4_threshold": h4_threshold,
@@ -73,11 +73,11 @@ def variant_api(
 
 def variant_summary_stats_api(
     transport: HttpTransport,
-    snp_id: str | int,
+    variant_id: str | int,
 ) -> dict[str, list[dict[str, str]]]:
-    payload = transport.request_bytes("GET", f"/v1/variants/{snp_id}/summary-stats")
+    payload = transport.request_bytes("GET", f"/v1/variants/{variant_id}/summary-stats")
     with tempfile.TemporaryDirectory(prefix="gpmappy_variant_") as tmpdir:
-        zip_path = Path(tmpdir) / f"summary_stats_{snp_id}.zip"
+        zip_path = Path(tmpdir) / f"summary_stats_{variant_id}.zip"
         zip_path.write_bytes(payload)
         tables: dict[str, list[dict[str, str]]] = {}
         with zipfile.ZipFile(zip_path, "r") as zf:

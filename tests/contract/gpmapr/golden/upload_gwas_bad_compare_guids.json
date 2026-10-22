@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_bad_compare_guids",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "compare_with_upload_guids must be a vector of GUIDs"
+}

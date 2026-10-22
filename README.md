@@ -39,8 +39,14 @@ pip install "gpmappy[dataframe]"
 ## Quick check
 
 ```bash
-pytest
+pytest              # unit + gpmapr parity contract tests (no network)
+pytest --run-live   # also hit the production GPMap API
 ```
+
+The parity contract tests compare gpmappy against golden output recorded from the gpmapr
+R package. When gpmapr changes, regenerate them with
+`Rscript scripts/parity/generate_gpmapr_contract.R path/to/gpmapr` (see
+`docs/api_contract.md`).
 
 ## Troubleshooting
 

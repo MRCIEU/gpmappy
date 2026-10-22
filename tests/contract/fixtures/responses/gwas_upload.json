@@ -1,0 +1,59 @@
+{
+ "trait": {
+  "guid": "3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b",
+  "name": "My uploaded GWAS",
+  "status": "completed",
+  "sample_size": 1000,
+  "category": "continuous",
+  "reference_build": "GRCh38"
+ },
+ "coloc_groups": [
+  {
+   "coloc_group_id": 1,
+   "study_id": 5020,
+   "existing_study_id": null,
+   "variant_id": 5553677,
+   "ld_block_id": 1354,
+   "h4_connectedness": 0.91,
+   "trait_name": "Fibroblastic disorders"
+  },
+  {
+   "coloc_group_id": 1,
+   "study_id": null,
+   "existing_study_id": 77,
+   "variant_id": 5553677,
+   "ld_block_id": 1354,
+   "h4_connectedness": 0.91,
+   "trait_name": "My uploaded GWAS"
+  },
+  {
+   "coloc_group_id": 2,
+   "study_id": null,
+   "existing_study_id": null,
+   "variant_id": 5553693,
+   "ld_block_id": 1354,
+   "h4_connectedness": 0.72,
+   "trait_name": "Unmatched upload row"
+  },
+  {
+   "coloc_group_id": 2,
+   "study_id": 4405,
+   "existing_study_id": null,
+   "variant_id": 5553693,
+   "ld_block_id": 1354,
+   "h4_connectedness": 0.72,
+   "trait_name": "Malignant neoplasm of skin"
+  }
+ ],
+ "study_extractions": [
+  {
+   "id": 9001,
+   "study_id": null,
+   "existing_study_id": 77,
+   "variant_id": 5553677,
+   "display_snp": "22:45968281 G/A"
+  }
+ ],
+ "rare_results": [],
+ "associations": null
+}

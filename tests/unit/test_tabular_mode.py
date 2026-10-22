@@ -42,9 +42,9 @@ def test_gene_coerces_nested_tables(monkeypatch: pytest.MonkeyPatch) -> None:
     def fake_gene_api(*args: Any, **kwargs: Any) -> dict[str, Any]:
         return {
             "gene": {"gene": "WNT7B"},
-            "coloc_groups": [{"study_id": 1, "snp_id": 2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 2}],
             "study_extractions": [{"id": 10, "study_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 2}],
+            "rare_results": [{"study_id": 1, "variant_id": 2}],
         }
 
     monkeypatch.setattr("gpmappy.client.gene_api", fake_gene_api)

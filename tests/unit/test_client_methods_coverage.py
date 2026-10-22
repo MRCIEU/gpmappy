@@ -8,6 +8,10 @@ import pytest
 from gpmappy.client import GpmapClient
 from gpmappy.exceptions import ValidationError
 
+FULL_ASSOCIATION_P = 0.01
+UPLOAD_BETA = 0.4
+TRAIT_COUNT = 2
+
 
 @pytest.fixture
 def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
@@ -18,41 +22,52 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
     monkeypatch.setattr("gpmappy.client.genes_api", lambda _: {"genes": [{"id": "ENSG1"}]})
     monkeypatch.setattr(
         "gpmappy.client.associations_api",
-        lambda *_args, **_kwargs: {"associations": [{"snp_id": 1}]},
+        lambda *_args, **_kwargs: {"associations": [{"variant_id": 1}]},
+    )
+    monkeypatch.setattr(
+        "gpmappy.client.trait_duplicates_api",
+        lambda _: {"duplicates": [{"trait_id": 2, "duplicate_group": 1}]},
     )
     monkeypatch.setattr(
         "gpmappy.client.gene_pleiotropies_api", lambda _: {"genes": [{"gene": "A"}]}
     )
-    monkeypatch.setattr("gpmappy.client.snp_pleiotropies_api", lambda _: {"snps": [{"snp": "rs1"}]})
+    monkeypatch.setattr(
+        "gpmappy.client.variant_pleiotropies_api", lambda _: {"snps": [{"snp": "rs1"}]}
+    )
 
     monkeypatch.setattr(
         "gpmappy.client.trait_api",
         lambda *_args, **_kwargs: {
             "trait": {"trait": "ieu-a-2"},
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.1}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.1}],
         },
     )
     monkeypatch.setattr(
         "gpmappy.client.trait_coloc_pairs_api", lambda *_args, **_kwargs: [{"pair": 1}]
     )
     monkeypatch.setattr(
+        "gpmappy.client.trait_associations_full_api",
+        lambda *_args, **_kwargs: [{"variant_id": 1, "study_id": 1, "p": 0.01}],
+    )
+    monkeypatch.setattr(
         "gpmappy.client.specific_traits_api",
         lambda *_args, **_kwargs: {
             "traits": [{"id": 1}],
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
             "study_extractions": [{"id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
         },
     )
     monkeypatch.setattr(
         "gpmappy.client.get_gwas_api",
         lambda *_args, **_kwargs: {
             "trait": {"id": 99, "trait": "uploaded"},
-            "coloc_groups": [{"study_id": 2, "snp_id": 2}],
+            "coloc_groups": [{"study_id": 2, "variant_id": 2}],
             "study_extractions": [{"id": 2}],
-            "rare_results": [{"study_id": 2, "snp_id": 2}],
+            "rare_results": [{"study_id": 2, "variant_id": 2}],
+            "associations": [{"study_id": 2, "variant_id": 2, "beta": 0.4}],
         },
     )
 
@@ -60,9 +75,9 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
         "gpmappy.client.gene_api",
         lambda *_args, **_kwargs: {
             "gene": {"id": "ENSG1"},
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.2}],
             "tissues": ["x"],
         },
     )
@@ -70,9 +85,9 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
         "gpmappy.client.specific_genes_api",
         lambda *_args, **_kwargs: {
             "genes": [{"id": "ENSG1"}],
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.2}],
         },
     )
 
@@ -80,9 +95,9 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
         "gpmappy.client.region_api",
         lambda *_args, **_kwargs: {
             "region": {"id": 1},
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.2}],
             "tissues": ["x"],
         },
     )
@@ -91,9 +106,9 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
         "gpmappy.client.variant_api",
         lambda *_args, **_kwargs: {
             "variant": {"id": 1},
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.2}],
         },
     )
     monkeypatch.setattr(
@@ -104,20 +119,20 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
         "gpmappy.client.variants_api",
         lambda *_args, **_kwargs: {
             "variants": [{"id": 1}],
-            "coloc_groups": [{"study_id": 1, "snp_id": 1}],
-            "rare_results": [{"study_id": 1, "snp_id": 1}],
-            "associations": [{"study_id": 1, "snp_id": 1, "beta": 0.2}],
+            "coloc_groups": [{"study_id": 1, "variant_id": 1}],
+            "rare_results": [{"study_id": 1, "variant_id": 1}],
+            "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.2}],
         },
     )
 
     monkeypatch.setattr(
-        "gpmappy.client.ld_matrix_by_snp_id_api", lambda *_args, **_kwargs: {"kind": "snp"}
+        "gpmappy.client.ld_matrix_by_variant_id_api", lambda *_args, **_kwargs: {"kind": "snp"}
     )
     monkeypatch.setattr(
         "gpmappy.client.ld_matrix_by_variant_api", lambda *_args, **_kwargs: {"kind": "variant"}
     )
     monkeypatch.setattr(
-        "gpmappy.client.ld_proxies_by_snp_id_api", lambda *_args, **_kwargs: {"kind": "snp"}
+        "gpmappy.client.ld_proxies_by_variant_id_api", lambda *_args, **_kwargs: {"kind": "snp"}
     )
     monkeypatch.setattr(
         "gpmappy.client.ld_proxies_by_variant_api", lambda *_args, **_kwargs: {"kind": "variant"}
@@ -128,6 +143,9 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
     )
     monkeypatch.setattr(
         "gpmappy.client.upload_gwas_api", lambda *_args, **_kwargs: {"uploaded": True}
+    )
+    monkeypatch.setattr(
+        "gpmappy.client.delete_gwas_api", lambda *_args, **_kwargs: {"message": "deleted"}
     )
 
     monkeypatch.setattr(
@@ -176,18 +194,33 @@ def test_client_happy_paths(patched_client: GpmapClient) -> None:
     assert isinstance(client.all_genes(as_dataframe=False), list)
     assert isinstance(client.associations([1], [2], as_dataframe=False), list)
     assert isinstance(client.get_all_gene_pleiotropies(as_dataframe=False), list)
-    assert isinstance(client.get_all_snp_pleiotropies(as_dataframe=False), list)
+    assert isinstance(client.get_all_variant_pleiotropies(as_dataframe=False), list)
+    with pytest.warns(FutureWarning, match="get_all_variant_pleiotropies"):
+        assert isinstance(client.get_all_snp_pleiotropies(as_dataframe=False), list)
+    assert client.trait_duplicates(as_dataframe=False)[0]["duplicate_group"] == 1
 
-    t = client.trait(1, include_associations=True, include_coloc_pairs=True, as_dataframe=False)
+    t = client.trait(
+        1,
+        include_associations=True,
+        include_full_associations=True,
+        include_coloc_pairs=True,
+        as_dataframe=False,
+    )
     assert "coloc_pairs" in t
+    assert t["full_associations"][0]["p"] == FULL_ASSOCIATION_P
     assert "source_url" in t["trait"]
-    t_guid = client.trait("123e4567-e89b-12d3-a456-426614174000", as_dataframe=False)
+    t_guid = client.trait(
+        "123e4567-e89b-12d3-a456-426614174000", include_associations=True, as_dataframe=False
+    )
     assert t_guid["trait"]["trait"] == "uploaded"
+    assert t_guid["coloc_groups"][0]["beta"] == UPLOAD_BETA
 
     tr = client.traits(
         [1, "123e4567-e89b-12d3-a456-426614174000"], include_coloc_pairs=True, as_dataframe=False
     )
-    assert "traits" in tr
+    assert len(tr["traits"]) == TRAIT_COUNT
+    only_uploads = client.traits(["123e4567-e89b-12d3-a456-426614174000"], as_dataframe=False)
+    assert only_uploads["traits"][0]["trait"] == "uploaded"
 
     assert "gene" in client.gene("ENSG1", include_associations=True, as_dataframe=False)
     assert "genes" in client.genes(["ENSG1"], include_associations=True, as_dataframe=False)
@@ -214,10 +247,21 @@ def test_client_happy_paths(patched_client: GpmapClient) -> None:
             name="ok",
             email="a@b.com",
             sample_size=10,
+            compare_with_upload_guids="123e4567-e89b-12d3-a456-426614174000",
+            chr_col="chr",
+            bp_col="bp",
+            ea_col="ea",
+            oa_col="oa",
+            p_col="p",
+            or_col="or",
+            or_lb_col="lb",
+            or_ub_col="ub",
         )
         assert uploaded["uploaded"]
     finally:
         path.unlink(missing_ok=True)
+
+    assert client.delete_gwas("123e4567-e89b-12d3-a456-426614174000", "a@b.com")["message"]
 
     assert isinstance(client.search_gpmap("rs1", as_dataframe=False), list)
     assert isinstance(client.search_gpmap("haemoglobin", as_dataframe=False), list)
@@ -232,6 +276,10 @@ def test_client_validation_paths(patched_client: GpmapClient) -> None:
         client.trait(None)  # type: ignore[arg-type]
     with pytest.raises(ValidationError):
         client.traits([])
+    with pytest.raises(ValidationError, match="missing values"):
+        client.traits([1, None])  # type: ignore[list-item]
+    with pytest.raises(ValidationError, match="at most 10"):
+        client.genes([f"G{i}" for i in range(11)])
     with pytest.raises(ValidationError):
         client.genes([])
     with pytest.raises(ValidationError):
@@ -250,3 +298,7 @@ def test_client_validation_paths(patched_client: GpmapClient) -> None:
         client.search_gpmap("")
     with pytest.raises(ValidationError):
         client.search_gpmap("abc", rsquared_threshold=2)
+    with pytest.raises(ValidationError, match="GUID"):
+        client.delete_gwas("not-a-guid", "a@b.com")
+    with pytest.raises(ValidationError, match="email is required"):
+        client.delete_gwas("123e4567-e89b-12d3-a456-426614174000", "  ")
