@@ -1,12 +1,12 @@
 """Live checks of every export, mirroring gpmapr's tests/testthat/test_exported_functions.R.
 
 Run with ``pytest --run-live`` (or GPMAPPY_RUN_LIVE=1); they are skipped otherwise. They
-use the API at $GPMAP_URL (default: production), e.g. GPMAP_URL=http://localhost:8000.
+use the API at $GPMAP_URL (default: production), e.g. GPMAP_URL=http://localhost:8000, and
+are skipped when this gpmappy doesn't support its version (see ``live_api_url`` in conftest.py).
 """
 
 from __future__ import annotations
 
-import os
 from collections.abc import Iterator
 from typing import Any
 
@@ -36,7 +36,6 @@ from gpmappy import (
     variants,
 )
 from gpmappy.config import GpmapConfig
-from gpmappy.constants import PRODUCTION_BASE_URL
 from gpmappy.exceptions import ApiError
 
 pytestmark = [pytest.mark.integration, pytest.mark.live]
@@ -46,11 +45,9 @@ VARIANT_ID = 5553693
 
 
 @pytest.fixture(scope="module", autouse=True)
-def live_client() -> Iterator[None]:
+def live_client(live_api_url: str) -> Iterator[None]:
     original = get_default_client()
-    set_default_client(
-        GpmapClient(GpmapConfig(base_url=os.environ.get("GPMAP_URL", PRODUCTION_BASE_URL)))
-    )
+    set_default_client(GpmapClient(GpmapConfig(base_url=live_api_url)))
     yield
     set_default_client(original)
 

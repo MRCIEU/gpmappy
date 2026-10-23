@@ -24,6 +24,10 @@ jobs:
         run: mypy src
       - name: Pytest
         run: pytest
+        env:
+          # Also run the tests marked 'live' against the production API. They skip themselves when
+          # it can't be reached or this gpmappy doesn't support its version (tests/conftest.py).
+          GPMAPPY_RUN_LIVE: "1"
       - name: Build and check package
         run: |
           python -m build
