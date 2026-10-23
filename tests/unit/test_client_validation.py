@@ -47,6 +47,13 @@ def test_upload_validation_accepts_valid_inputs(monkeypatch: pytest.MonkeyPatch)
             name="Test",
             email="email@example.com",
             sample_size=1000,
+            chr_col="chr",
+            bp_col="pos",
+            ea_col="ea",
+            oa_col="oa",
+            p_col="p",
+            beta_col="beta",
+            se_col="se",
         )
         assert result["status"] == "ok"
     finally:

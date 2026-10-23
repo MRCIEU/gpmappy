@@ -1,0 +1,25 @@
+{
+  "id": "health_api",
+  "function": "health_api",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "status": "healthy",
+      "queue_size": 0,
+      "queue": {
+        "kind": "list",
+        "items": []
+      },
+      "in_progress_queue_size": 0,
+      "dead_letter_queue": 0
+    }
+  }
+}

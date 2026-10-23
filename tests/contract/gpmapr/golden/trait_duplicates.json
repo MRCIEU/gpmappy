@@ -1,0 +1,49 @@
+{
+  "id": "trait_duplicates",
+  "function": "trait_duplicates",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/traits/duplicates",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "table",
+    "columns": [
+      "duplicate_group",
+      "is_representative",
+      "match_rules",
+      "proxy_group_id",
+      "proxy_group_name",
+      "trait_id",
+      "trait_name"
+    ],
+    "rows": [
+      {
+        "trait_id": 1993,
+        "trait_name": "Height",
+        "duplicate_group": 1,
+        "is_representative": true,
+        "proxy_group_id": 50,
+        "proxy_group_name": "Height"
+      },
+      {
+        "trait_id": 2869,
+        "trait_name": "Standing height",
+        "duplicate_group": 1,
+        "is_representative": false,
+        "match_rules": "synonym",
+        "proxy_group_id": 50,
+        "proxy_group_name": "Height"
+      },
+      {
+        "trait_id": 168,
+        "trait_name": "Appendicular lean mass",
+        "duplicate_group": 2,
+        "is_representative": true
+      }
+    ]
+  }
+}

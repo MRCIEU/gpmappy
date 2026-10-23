@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_beta_without_se",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "Either beta_col and se_col, or or_col, or_lb_col and or_ub_col must be specified"
+}

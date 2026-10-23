@@ -1,0 +1,16 @@
+{
+  "id": "search_no_match",
+  "function": "search_gpmap",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/search/options",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "list",
+    "items": []
+  }
+}

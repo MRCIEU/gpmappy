@@ -1,0 +1,7 @@
+{
+  "id": "delete_gwas_bad_guid",
+  "function": "delete_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "gwas_id must be the GUID of a GWAS upload"
+}

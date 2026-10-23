@@ -107,16 +107,16 @@ def test_cache_tabular_merge_and_utils_branches(monkeypatch: pytest.MonkeyPatch)
     assert maybe_table([{"x": 1}], as_dataframe=False) == [{"x": 1}]
     assert maybe_table({"x": 1}, as_dataframe=False) == {"x": 1}
 
-    coloc, rare = merge_associations(
-        [{"study_id": 1, "snp_id": 1}], [{"study_id": 2, "snp_id": 2}], []
+    coloc, rare, _ = merge_associations(
+        [{"study_id": 1, "variant_id": 1}], [{"study_id": 2, "variant_id": 2}], []
     )
     assert coloc[0]["study_id"] == 1
     assert rare[0]["study_id"] == EXPECTED_RARE_STUDY_ID
 
-    merged_coloc, merged_rare = merge_associations(
-        [{"study_id": 1, "snp_id": 1}],
-        [{"study_id": 1, "snp_id": 1}],
-        [{"study_id": 1, "snp_id": 1, "beta": MERGED_BETA}],
+    merged_coloc, merged_rare, _ = merge_associations(
+        [{"study_id": 1, "variant_id": 1}],
+        [{"study_id": 1, "variant_id": 1}],
+        [{"study_id": 1, "variant_id": 1, "beta": MERGED_BETA}],
     )
     assert merged_coloc[0]["beta"] == MERGED_BETA
     assert merged_rare[0]["beta"] == MERGED_BETA

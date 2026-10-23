@@ -1,0 +1,13 @@
+{
+  "id": "compare_upload_without_associations",
+  "function": "compare_upload",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/gwas/7a289615-c1b4-91f3-3d97-887f60de9155",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "error": "upload has no associations: fetch it with include_associations = TRUE, e.g. get_gwas(guid, include_associations = TRUE)"
+}

@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_missing_p_col",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "Missing required column arguments: p_col"
+}

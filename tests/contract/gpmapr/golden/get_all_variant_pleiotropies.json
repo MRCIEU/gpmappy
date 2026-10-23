@@ -1,0 +1,73 @@
+{
+  "id": "get_all_variant_pleiotropies",
+  "function": "get_all_variant_pleiotropies",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/pleiotropy/snps",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "table",
+    "columns": [
+      "display_snp",
+      "distinct_protein_coding_genes",
+      "distinct_protein_coding_genes_cis_all",
+      "distinct_protein_coding_genes_cis_gws",
+      "distinct_protein_coding_genes_cis_trans_all",
+      "distinct_protein_coding_genes_cis_trans_gws",
+      "distinct_trait_categories",
+      "distinct_trait_categories_cis_all",
+      "distinct_trait_categories_cis_gws",
+      "distinct_trait_categories_cis_trans_all",
+      "distinct_trait_categories_cis_trans_gws",
+      "variant_id"
+    ],
+    "rows": [
+      {
+        "variant_id": 30,
+        "display_snp": "1:836587 G/A",
+        "distinct_trait_categories": 0,
+        "distinct_protein_coding_genes": 1,
+        "distinct_trait_categories_cis_gws": 0,
+        "distinct_trait_categories_cis_all": 0,
+        "distinct_trait_categories_cis_trans_gws": 0,
+        "distinct_trait_categories_cis_trans_all": 0,
+        "distinct_protein_coding_genes_cis_gws": 0,
+        "distinct_protein_coding_genes_cis_all": 0,
+        "distinct_protein_coding_genes_cis_trans_gws": 1,
+        "distinct_protein_coding_genes_cis_trans_all": 1
+      },
+      {
+        "variant_id": 54,
+        "display_snp": "1:863579 G/A",
+        "distinct_trait_categories": 1,
+        "distinct_protein_coding_genes": 0,
+        "distinct_trait_categories_cis_gws": 1,
+        "distinct_trait_categories_cis_all": 1,
+        "distinct_trait_categories_cis_trans_gws": 1,
+        "distinct_trait_categories_cis_trans_all": 1,
+        "distinct_protein_coding_genes_cis_gws": 0,
+        "distinct_protein_coding_genes_cis_all": 0,
+        "distinct_protein_coding_genes_cis_trans_gws": 0,
+        "distinct_protein_coding_genes_cis_trans_all": 0
+      },
+      {
+        "variant_id": 73,
+        "display_snp": "1:874496 A/G",
+        "distinct_trait_categories": 0,
+        "distinct_protein_coding_genes": 0,
+        "distinct_trait_categories_cis_gws": 0,
+        "distinct_trait_categories_cis_all": 0,
+        "distinct_trait_categories_cis_trans_gws": 0,
+        "distinct_trait_categories_cis_trans_all": 0,
+        "distinct_protein_coding_genes_cis_gws": 0,
+        "distinct_protein_coding_genes_cis_all": 0,
+        "distinct_protein_coding_genes_cis_trans_gws": 0,
+        "distinct_protein_coding_genes_cis_trans_all": 0
+      }
+    ]
+  }
+}

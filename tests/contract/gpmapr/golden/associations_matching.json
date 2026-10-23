@@ -1,0 +1,47 @@
+{
+  "id": "associations_matching",
+  "function": "associations",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/associations",
+      "query": {
+        "study_ids": ["15980", "5115"],
+        "variant_ids": ["5553677", "5553693"]
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "table",
+    "columns": [
+      "beta",
+      "eaf",
+      "imputed",
+      "p",
+      "se",
+      "study_id",
+      "variant_id"
+    ],
+    "rows": [
+      {
+        "variant_id": 5553677,
+        "study_id": 15980,
+        "beta": -0.247097000479698,
+        "se": 0.0373427011072636,
+        "p": 3.66556e-11,
+        "eaf": 0.270491987466812,
+        "imputed": false
+      },
+      {
+        "variant_id": 5553693,
+        "study_id": 5115,
+        "beta": 0.00652850978076458,
+        "se": 0.00113416998647153,
+        "p": 8.61033403325173e-09,
+        "eaf": 0.23293499648571,
+        "imputed": false
+      }
+    ]
+  }
+}

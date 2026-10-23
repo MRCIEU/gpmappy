@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_both_column_styles",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "Specify columns with either the *_col arguments or column_names, not both"
+}

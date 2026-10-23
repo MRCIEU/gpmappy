@@ -1,0 +1,76 @@
+{
+  "id": "search_trait_text_ties",
+  "function": "search_gpmap",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/search/options",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "table",
+    "columns": [
+      "ancestry",
+      "call",
+      "name",
+      "num_coloc_groups",
+      "num_coloc_studies",
+      "num_rare_results",
+      "num_study_extractions",
+      "sample_size",
+      "type",
+      "type_id"
+    ],
+    "rows": [
+      {
+        "type": "trait",
+        "name": "Mean corpuscular haemoglobin",
+        "type_id": "1983",
+        "sample_size": 572863,
+        "ancestry": "EUR",
+        "num_study_extractions": 1546,
+        "num_coloc_groups": 936,
+        "num_coloc_studies": 16320,
+        "call": "trait(1983)"
+      },
+      {
+        "type": "trait",
+        "name": "Mean corpuscular haemoglobin concentration",
+        "type_id": "4762",
+        "sample_size": 430998,
+        "ancestry": "EUR",
+        "num_study_extractions": 618,
+        "num_coloc_groups": 137,
+        "num_coloc_studies": 3144,
+        "num_rare_results": 55,
+        "call": "trait(4762)"
+      },
+      {
+        "type": "trait",
+        "name": "Glycated haemoglobin HbA1c levels (UKB data field 30750)",
+        "type_id": "2611",
+        "sample_size": 389889,
+        "ancestry": "EUR",
+        "num_study_extractions": 1395,
+        "num_coloc_groups": 137,
+        "num_coloc_studies": 12132,
+        "num_rare_results": 55,
+        "call": "trait(2611)"
+      },
+      {
+        "type": "trait",
+        "name": "Glycated haemoglobin levels (HGB)",
+        "type_id": "915",
+        "sample_size": 146806,
+        "ancestry": "EUR",
+        "num_study_extractions": 484,
+        "num_coloc_groups": 93,
+        "num_coloc_studies": 2919,
+        "num_rare_results": 0,
+        "call": "trait(915)"
+      }
+    ]
+  }
+}

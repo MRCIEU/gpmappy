@@ -11,5 +11,5 @@ def gene_pleiotropies_api(transport: HttpTransport) -> dict[str, Any]:
     return transport.request_json("GET", "/v1/pleiotropy/genes")
 
 
-def snp_pleiotropies_api(transport: HttpTransport) -> dict[str, Any]:
+def variant_pleiotropies_api(transport: HttpTransport) -> dict[str, Any]:
     return transport.request_json("GET", "/v1/pleiotropy/snps")

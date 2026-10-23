@@ -39,8 +39,17 @@ pip install "gpmappy[dataframe]"
 ## Quick check
 
 ```bash
-pytest
+pytest              # unit + gpmapr parity contract tests (no network)
+pytest --run-live   # also hit the GPMap API ($GPMAP_URL, default production)
+GPMAPPY_PARITY_URL=http://localhost:8000 pytest --run-live tests/integration/test_live_parity.py
 ```
+
+gpmappy 1.0 needs version 1.1.0 of the GPMap API.
+
+The parity contract tests compare gpmappy against golden output recorded from the gpmapr
+R package. When gpmapr changes, regenerate them with
+`Rscript scripts/parity/generate_gpmapr_contract.R path/to/gpmapr` (see
+`docs/api_contract.md`).
 
 ## Troubleshooting
 

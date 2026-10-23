@@ -1,0 +1,13 @@
+{
+  "id": "gpmap_available",
+  "function": "gpmap_available",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "query": {}
+    }
+  ],
+  "warnings": [],
+  "result": true
+}

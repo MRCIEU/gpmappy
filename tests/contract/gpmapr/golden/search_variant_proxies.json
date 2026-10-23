@@ -1,0 +1,58 @@
+{
+  "id": "search_variant_proxies",
+  "function": "search_gpmap",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/search/variant/rs28971325",
+      "query": {
+        "rsquared_threshold": "0.8"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "table",
+    "columns": [
+      "call",
+      "name",
+      "num_coloc_groups",
+      "num_coloc_studies",
+      "num_rare_results",
+      "rsq",
+      "type",
+      "type_id"
+    ],
+    "rows": [
+      {
+        "type": "original_variant",
+        "name": "22:45971264 G/A",
+        "type_id": 5553693,
+        "num_coloc_groups": 1,
+        "num_coloc_studies": 2,
+        "num_rare_results": 0,
+        "call": "variant(5553693)"
+      },
+      {
+        "type": "proxy_variant",
+        "name": "22:45969000 A/G",
+        "type_id": 5553688,
+        "rsq": 0.81,
+        "num_coloc_groups": 30,
+        "num_coloc_studies": 3,
+        "num_rare_results": 0,
+        "call": "variant(5553688)"
+      },
+      {
+        "type": "proxy_variant",
+        "name": "22:45971500 C/T",
+        "type_id": 5553694,
+        "rsq": 0.9,
+        "num_coloc_groups": 9,
+        "num_coloc_studies": 1,
+        "num_rare_results": 0,
+        "call": "variant(5553694)"
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "trait_not_found",
+  "function": "trait",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/traits/999999999",
+      "query": {
+        "include_associations": "false"
+      }
+    }
+  ],
+  "warnings": [],
+  "error": "GPMap API request failed (HTTP 404): Trait 999999999 not found"
+}

@@ -1,0 +1,82 @@
+{
+ "search_terms": [
+  {
+   "type": "gene",
+   "name": "DPM1",
+   "alt_name": "ENSG00000000419, MPDS, CDGIE",
+   "type_id": "DPM1",
+   "aliases": "MPDS, CDGIE",
+   "sample_size": null,
+   "ancestry": null,
+   "num_study_extractions": 218,
+   "num_coloc_groups": 7,
+   "num_coloc_studies": 16,
+   "num_rare_results": 7
+  },
+  {
+   "type": "trait",
+   "name": "Mean corpuscular haemoglobin concentration",
+   "alt_name": null,
+   "type_id": 4762,
+   "aliases": null,
+   "sample_size": 430998,
+   "ancestry": "EUR",
+   "num_study_extractions": 618,
+   "num_coloc_groups": 137,
+   "num_coloc_studies": 3144,
+   "num_rare_results": 55
+  },
+  {
+   "type": "trait",
+   "name": "Glycated haemoglobin levels",
+   "alt_name": "HGB",
+   "type_id": 915,
+   "aliases": null,
+   "sample_size": 146806,
+   "ancestry": "EUR",
+   "num_study_extractions": 484,
+   "num_coloc_groups": 93,
+   "num_coloc_studies": 2919,
+   "num_rare_results": 0
+  },
+  {
+   "type": "trait",
+   "name": "Mean corpuscular haemoglobin",
+   "alt_name": null,
+   "type_id": 1983,
+   "aliases": null,
+   "sample_size": 572863,
+   "ancestry": "EUR",
+   "num_study_extractions": 1546,
+   "num_coloc_groups": 936,
+   "num_coloc_studies": 16320,
+   "num_rare_results": null
+  },
+  {
+   "type": "trait",
+   "name": "Glycated haemoglobin HbA1c levels (UKB data field 30750)",
+   "alt_name": null,
+   "type_id": 2611,
+   "aliases": null,
+   "sample_size": 389889,
+   "ancestry": "EUR",
+   "num_study_extractions": 1395,
+   "num_coloc_groups": 137,
+   "num_coloc_studies": 12132,
+   "num_rare_results": 55
+  },
+  {
+   "type": "gene",
+   "name": "SCYL3",
+   "alt_name": "ENSG00000000457, PACE-1, PACE1",
+   "type_id": "SCYL3",
+   "aliases": "PACE-1, PACE1",
+   "sample_size": null,
+   "ancestry": null,
+   "num_study_extractions": 165,
+   "num_coloc_groups": 10,
+   "num_coloc_studies": 37,
+   "num_rare_results": 10
+  }
+ ]
+}

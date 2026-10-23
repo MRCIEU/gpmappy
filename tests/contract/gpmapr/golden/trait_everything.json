@@ -1,0 +1,439 @@
+{
+  "id": "trait_everything",
+  "function": "trait",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/traits/5020",
+      "query": {
+        "include_associations": "true"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/v1/traits/5020/associations-full",
+      "query": {}
+    },
+    {
+      "method": "GET",
+      "path": "/v1/traits/5020/coloc-pairs",
+      "query": {
+        "h4_threshold": "0.8"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "trait": {
+        "kind": "object",
+        "fields": {
+          "id": 5020,
+          "data_type": "Phenotype",
+          "pipeline_id": "ukb-d-M13-FIBROBLASTIC",
+          "trait_name": "Fibroblastic disorders",
+          "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
+          "common_study": {
+            "kind": "object",
+            "fields": {
+              "id": 5020,
+              "data_type": "Phenotype",
+              "study_name": "ukb-d-M13-FIBROBLASTIC",
+              "trait_id": 5020,
+              "ancestry": "EUR",
+              "sample_size": 361194,
+              "variable_type": "categorical",
+              "source_id": 5,
+              "variant_type": "Common",
+              "p_value_threshold": 0.00015,
+              "url": "https://opengwas.io/datasets/ukb-d-M13_FIBROBLASTIC"
+            }
+          },
+          "rare_study": {
+            "kind": "object",
+            "fields": {
+              "id": 54929,
+              "data_type": "Phenotype",
+              "study_name": "ukb-wes-az-00008986",
+              "trait_id": 5020,
+              "ancestry": "EUR",
+              "sample_size": 142446,
+              "variable_type": "categorical",
+              "source_id": 8,
+              "variant_type": "Rare Exome",
+              "p_value_threshold": 0.00015,
+              "url": "https://azphewas.com/"
+            }
+          },
+          "duplicate_group": 571,
+          "is_representative": true,
+          "source_url": "https://opengwas.io/datasets/ukb-d-M13_FIBROBLASTIC"
+        }
+      },
+      "coloc_groups": {
+        "kind": "table",
+        "columns": [
+          "beta",
+          "bp",
+          "chr",
+          "cis_trans",
+          "coloc_group_id",
+          "data_type",
+          "display_snp",
+          "eaf",
+          "gene",
+          "gene_id",
+          "h3_connectedness",
+          "h4_connectedness",
+          "imputed",
+          "ld_block",
+          "ld_block_id",
+          "min_p",
+          "p",
+          "rsid",
+          "se",
+          "source_id",
+          "source_name",
+          "source_url",
+          "study_extraction_id",
+          "study_id",
+          "tissue",
+          "trait_category",
+          "trait_id",
+          "trait_name",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "coloc_group_id": 62061,
+            "study_id": 15980,
+            "study_extraction_id": 4928543,
+            "variant_id": 5553677,
+            "ld_block_id": 1354,
+            "h4_connectedness": 0.856330037117004,
+            "h3_connectedness": 0.105263158679008,
+            "chr": 22,
+            "bp": 45968281,
+            "min_p": 3.79755e-12,
+            "cis_trans": "cis",
+            "ld_block": "EUR/22/44582535-46439661",
+            "display_snp": "22:45968281 G/A",
+            "rsid": "rs9330813",
+            "gene": "WNT7B",
+            "gene_id": 15611,
+            "trait_id": 15975,
+            "trait_name": "WNT7B Brain (Meta) eQTL",
+            "data_type": "Gene Expression",
+            "tissue": "Brain (Meta)",
+            "source_id": 2,
+            "source_name": "Brain Meta",
+            "source_url": "https://yanglab.westlake.edu.cn/data/brainmeta",
+            "beta": -0.247097000479698,
+            "se": 0.0373427011072636,
+            "p": 3.66556e-11,
+            "eaf": 0.270491987466812,
+            "imputed": false
+          },
+          {
+            "coloc_group_id": 62061,
+            "study_id": 5020,
+            "study_extraction_id": 4936031,
+            "variant_id": 5553677,
+            "ld_block_id": 1354,
+            "h4_connectedness": 0.856330037117004,
+            "h3_connectedness": 0.105263158679008,
+            "chr": 22,
+            "bp": 45968281,
+            "min_p": 6.60253823955751e-34,
+            "ld_block": "EUR/22/44582535-46439661",
+            "display_snp": "22:45968281 G/A",
+            "rsid": "rs9330813",
+            "trait_id": 5020,
+            "trait_name": "Fibroblastic disorders",
+            "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
+            "data_type": "Phenotype",
+            "source_id": 5,
+            "source_name": "UK Biobank",
+            "source_url": "https://opengwas.io/datasets/ukb-d-M13_FIBROBLASTIC"
+          },
+          {
+            "coloc_group_id": 62042,
+            "study_id": 5115,
+            "study_extraction_id": 4936069,
+            "variant_id": 5553693,
+            "ld_block_id": 1354,
+            "h4_connectedness": 0.606666684150696,
+            "h3_connectedness": 0.20666666328907,
+            "chr": 22,
+            "bp": 45971264,
+            "min_p": 8.61033403325173e-09,
+            "ld_block": "EUR/22/44582535-46439661",
+            "display_snp": "22:45971264 G/A",
+            "rsid": "rs28971325",
+            "trait_id": 5115,
+            "trait_name": "Diseases of the musculoskeletal system and connective tissue",
+            "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
+            "data_type": "Phenotype",
+            "source_id": 5,
+            "source_name": "UK Biobank",
+            "source_url": "https://opengwas.io/datasets/ukb-d-XIII_MUSCULOSKELET",
+            "beta": 0.00652850978076458,
+            "se": 0.00113416998647153,
+            "p": 8.61033403325173e-09,
+            "eaf": 0.23293499648571,
+            "imputed": false
+          }
+        ]
+      },
+      "rare_results": {
+        "kind": "table",
+        "columns": [
+          "beta",
+          "bp",
+          "chr",
+          "data_type",
+          "display_snp",
+          "eaf",
+          "imputed",
+          "ld_block",
+          "ld_block_id",
+          "min_p",
+          "p",
+          "rare_result_group_id",
+          "rsid",
+          "se",
+          "situated_gene",
+          "situated_gene_id",
+          "source_id",
+          "source_name",
+          "source_url",
+          "study_extraction_id",
+          "study_id",
+          "trait_category",
+          "trait_id",
+          "trait_name",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "rare_result_group_id": 166666,
+            "study_id": 53136,
+            "study_extraction_id": 5466480,
+            "variant_id": 11703493,
+            "situated_gene_id": 9891,
+            "ld_block_id": 1167,
+            "chr": 16,
+            "bp": 67927363,
+            "min_p": 9.377e-05,
+            "display_snp": "16:67927363 T/C",
+            "rsid": "rs768803153",
+            "situated_gene": "PSKH1",
+            "trait_id": 45363,
+            "trait_name": "Cataract unspecified (union)",
+            "trait_category": "Physiological Measures",
+            "data_type": "Phenotype",
+            "ld_block": "EUR/16/67561130-70486376",
+            "source_id": 8,
+            "source_name": "UK Biobank AstraZeneca PheWAS Portal v5.5",
+            "source_url": "https://azphewas.com/",
+            "beta": 0.856115996837616,
+            "se": 0.202414631843567,
+            "p": 9.377e-05,
+            "eaf": 0.000236099993344396,
+            "imputed": false
+          },
+          {
+            "rare_result_group_id": 146287,
+            "study_id": 53116,
+            "study_extraction_id": 5405056,
+            "variant_id": 11476840,
+            "situated_gene_id": 11086,
+            "ld_block_id": 1069,
+            "chr": 14,
+            "bp": 49628087,
+            "min_p": 1.033e-05,
+            "display_snp": "14:49628087 T/A",
+            "rsid": "rs748782316",
+            "situated_gene": "DNAAF2",
+            "trait_id": 45343,
+            "trait_name": "Iridocyclitis (union)",
+            "trait_category": "Physiological Measures",
+            "data_type": "Phenotype",
+            "ld_block": "EUR/14/48537145-51612492",
+            "source_id": 8,
+            "source_name": "UK Biobank AstraZeneca PheWAS Portal v5.5",
+            "source_url": "https://azphewas.com/",
+            "imputed": true
+          }
+        ]
+      },
+      "study_extractions": {
+        "kind": "table",
+        "columns": [
+          "bp",
+          "chr",
+          "credible_set",
+          "data_type",
+          "display_snp",
+          "file",
+          "file_with_lbfs",
+          "id",
+          "ld_block",
+          "ld_block_id",
+          "min_p",
+          "rsid",
+          "study",
+          "study_id",
+          "svg_file",
+          "trait_category",
+          "trait_id",
+          "trait_name",
+          "unique_study_id",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "id": 156089,
+            "study_id": 5020,
+            "variant_id": 156076,
+            "display_snp": "1:47643357 T/C",
+            "rsid": "rs140549647",
+            "ld_block_id": 27,
+            "unique_study_id": "ukb-d-M13-FIBROBLASTIC_EUR/1/46791535-48604095_1",
+            "study": "ukb-d-M13-FIBROBLASTIC",
+            "file": "study/ukb-d-M13-FIBROBLASTIC/finemapped/EUR_1_46791535_48604095_1.tsv.gz",
+            "svg_file": "study/ukb-d-M13-FIBROBLASTIC/svgs/extractions/EUR_1_46791535_48604095_1.svg",
+            "file_with_lbfs": "study//ukb-d-M13-FIBROBLASTIC/finemapped/EUR_1_46791535_48604095_with_lbf.tsv.gz",
+            "chr": 1,
+            "bp": 47643357,
+            "min_p": 1.24311125920961e-07,
+            "ld_block": "EUR/1/46791535-48604095",
+            "credible_set": 1,
+            "trait_id": 5020,
+            "trait_name": "Fibroblastic disorders",
+            "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
+            "data_type": "Phenotype"
+          },
+          {
+            "id": 204658,
+            "study_id": 5020,
+            "variant_id": 280232,
+            "display_snp": "1:84553741 C/T",
+            "rsid": "rs151000202",
+            "ld_block_id": 41,
+            "unique_study_id": "ukb-d-M13-FIBROBLASTIC_EUR/1/82478055-85515804_1",
+            "study": "ukb-d-M13-FIBROBLASTIC",
+            "file": "study/ukb-d-M13-FIBROBLASTIC/finemapped/EUR_1_82478055_85515804_1.tsv.gz",
+            "svg_file": "study/ukb-d-M13-FIBROBLASTIC/svgs/extractions/EUR_1_82478055_85515804_1.svg",
+            "file_with_lbfs": "study//ukb-d-M13-FIBROBLASTIC/finemapped/EUR_1_82478055_85515804_with_lbf.tsv.gz",
+            "chr": 1,
+            "bp": 84553741,
+            "min_p": 6.2821745632052e-05,
+            "ld_block": "EUR/1/82478055-85515804",
+            "credible_set": 1,
+            "trait_id": 5020,
+            "trait_name": "Fibroblastic disorders",
+            "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
+            "data_type": "Phenotype"
+          }
+        ]
+      },
+      "full_associations": {
+        "kind": "table",
+        "columns": [
+          "beta",
+          "eaf",
+          "imputed",
+          "p",
+          "se",
+          "study_id",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "variant_id": 35095,
+            "study_id": 5020,
+            "beta": -0.00485249981284142,
+            "se": 0.00120198994409293,
+            "p": 5.41389713698011e-05,
+            "eaf": 0.00868044979870319,
+            "imputed": 0
+          },
+          {
+            "variant_id": 14664,
+            "study_id": 5020,
+            "beta": -0.000939243996981531,
+            "se": 0.000238417997024953,
+            "p": 8.16732805245279e-05,
+            "eaf": 0.688557982444763,
+            "imputed": 0
+          },
+          {
+            "variant_id": 80717,
+            "study_id": 926,
+            "beta": 0.0153160002082586,
+            "se": 0.00241099996492267,
+            "p": 2.18997925035305e-10,
+            "eaf": 0.176053002476692,
+            "imputed": 0
+          },
+          {
+            "variant_id": 80717,
+            "study_id": 932,
+            "imputed": 1
+          }
+        ]
+      },
+      "coloc_pairs": {
+        "kind": "table",
+        "columns": [
+          "false_negative",
+          "false_positive",
+          "h3",
+          "h4",
+          "in_coloc_group",
+          "ld_block_id",
+          "study_extraction_a_id",
+          "study_extraction_b_id",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "variant_id": 80732,
+            "study_extraction_a_id": 77675,
+            "study_extraction_b_id": 77676,
+            "ld_block_id": 15,
+            "h3": 0.0301371403038502,
+            "h4": 0.969862878322601,
+            "false_positive": 0,
+            "false_negative": 0,
+            "in_coloc_group": 1
+          },
+          {
+            "variant_id": 80732,
+            "study_extraction_a_id": 77675,
+            "study_extraction_b_id": 77914,
+            "ld_block_id": 15,
+            "h3": 0.0303822588175535,
+            "h4": 0.96961772441864,
+            "false_positive": 0,
+            "false_negative": 0,
+            "in_coloc_group": 1
+          },
+          {
+            "variant_id": 80732,
+            "study_extraction_a_id": 77675,
+            "study_extraction_b_id": 77915,
+            "ld_block_id": 15,
+            "h3": 0.0323493517935276,
+            "h4": 0.967650651931763,
+            "false_positive": 0,
+            "false_negative": 0,
+            "in_coloc_group": 1
+          }
+        ]
+      }
+    }
+  }
+}

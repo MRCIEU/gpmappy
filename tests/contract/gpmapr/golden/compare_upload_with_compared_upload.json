@@ -1,0 +1,85 @@
+{
+  "id": "compare_upload_with_compared_upload",
+  "function": "compare_upload",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/gwas/7a289615-c1b4-91f3-3d97-887f60de9155",
+      "query": {
+        "include_associations": "true"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "coloc_groups": {
+        "kind": "table",
+        "columns": [
+          "coloc_group_id",
+          "display_snp",
+          "h4_connectedness",
+          "ld_block",
+          "ld_block_id",
+          "trait_beta",
+          "trait_name",
+          "trait_p",
+          "trait_se",
+          "trait_study_extraction_id",
+          "upload_beta",
+          "upload_p",
+          "upload_se",
+          "upload_study_extraction_id",
+          "variant_id"
+        ],
+        "rows": [
+          {
+            "coloc_group_id": 1,
+            "ld_block_id": 9,
+            "ld_block": "EUR/1/9",
+            "variant_id": 100,
+            "display_snp": "1:100 A/G",
+            "h4_connectedness": 0.9,
+            "upload_study_extraction_id": 7223,
+            "upload_beta": 0.5,
+            "upload_se": 0.1,
+            "upload_p": 1e-09,
+            "trait_name": "Compared GWAS",
+            "trait_study_extraction_id": 8001,
+            "trait_beta": 0.45,
+            "trait_se": 0.1,
+            "trait_p": 1e-09
+          }
+        ]
+      },
+      "coloc_pairs": {
+        "kind": "table",
+        "columns": [
+          "h3",
+          "h4",
+          "in_shared_coloc_group",
+          "ld_block_id",
+          "trait_display_snp",
+          "trait_name",
+          "trait_study_extraction_id",
+          "upload_display_snp",
+          "upload_study_extraction_id"
+        ],
+        "rows": [
+          {
+            "ld_block_id": 9,
+            "upload_study_extraction_id": 7223,
+            "upload_display_snp": "1:100 A/G",
+            "trait_name": "Compared GWAS",
+            "trait_study_extraction_id": 8001,
+            "trait_display_snp": "1:100 A/G",
+            "h3": 0.01,
+            "h4": 0.99,
+            "in_shared_coloc_group": true
+          }
+        ]
+      }
+    }
+  }
+}

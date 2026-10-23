@@ -1,0 +1,16 @@
+{
+ "lds": [
+  {
+   "lead_variant_id": 5553693,
+   "proxy_variant_id": 5553694,
+   "ld_block_id": 1354,
+   "r": 0.83
+  },
+  {
+   "lead_variant_id": 5553694,
+   "proxy_variant_id": 5553693,
+   "ld_block_id": 1354,
+   "r": 0.83
+  }
+ ]
+}

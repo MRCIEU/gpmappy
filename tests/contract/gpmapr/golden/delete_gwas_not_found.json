@@ -1,0 +1,16 @@
+{
+  "id": "delete_gwas_not_found",
+  "function": "delete_gwas",
+  "requests": [
+    {
+      "method": "DELETE",
+      "path": "/v1/gwas/00000000-0000-0000-0000-000000000000",
+      "query": {},
+      "body": {
+        "email": "user@example.com"
+      }
+    }
+  ],
+  "warnings": [],
+  "error": "Failed to delete GWAS upload 00000000-0000-0000-0000-000000000000: Uploaded GWAS with GUID 00000000-0000-0000-0000-000000000000 not found"
+}

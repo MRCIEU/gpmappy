@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_column_not_in_file",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "Columns not found in file: pval"
+}

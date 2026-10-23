@@ -1,4 +1,9 @@
-# gpmappy Phase 1 Parity Matrix
+# gpmappy Parity Matrix
+
+Tracks gpmapr 1.0.0 (GPMap API 1.1.0). `tests/contract/test_parity_contract.py` enforces this table: every
+gpmapr export must exist with the same parameters, and the scenarios in
+`tests/contract/scenarios.json` must produce the same requests and outputs (see
+[Parity contract](api_contract.md#parity-contract-with-gpmapr)).
 
 ## Legend
 
@@ -7,23 +12,27 @@
 
 | R Function | Python Surface | Raw API Method(s) | Endpoint(s) | Input Validation Rules | Transform/Business Logic | Expected Return Shape | Test Cases Required | Status | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| select_api | `GpmapClient.select_api` | n/a | n/a | api in {dev, production, custom} | set base URL | None | valid and invalid env | done | custom accepts full URL |
+| select_api | `GpmapClient.select_api` | n/a | n/a | api in {dev, production} | set base URL | None | valid and invalid env | intentional_divergence | internal in gpmapr; exported by gpmappy |
 | health_api | `GpmapClient.health_api` | `health_api` | `/health` | none | none | dict | healthy and unhealthy, HTTP errors | done | |
-| version_api | `GpmapClient.version_api` | `version_api` | `/v1/info/version` | none | extract `version` key | str | key exists and missing key | done | |
-| search_gpmap | `GpmapClient.search_gpmap` | `search_options_api`, `search_variants_api` | `/v1/search/options`, `/v1/search/variant/{query}` | non-empty search_text, rsquared in [0, 1] | cached options, variant-path branching, call-column generation | dataframe | trait text search, rs query, empty result | done | cache is in-memory TTL |
+| version_api | `GpmapClient.version_api` | `version_api` | `/v1/info/version` | none | extract `version` key | str | key exists and missing key | intentional_divergence | internal in gpmapr; both check the API version on the first request |
+| gpmap_available | `GpmapClient.gpmap_available` | `health_api` + version check | `/health`, `/v1/info/version` | none | never raises | bool | supported, unsupported, unreachable | done | |
+| search_gpmap | `GpmapClient.search_gpmap` | `search_options_api`, `search_variants_api` | `/v1/search/options`, `/v1/search/variant/{query}` | non-empty search_text, rsquared in [0, 1] | cached options (text searches only), variant branch for `rs...` / `chr:bp` with per-proxy `rsq`, call column, ordered by coloc groups + rare results with the searched variant first | dataframe | trait text search, rs query, empty result, ordering | done | |
 | all_traits | `GpmapClient.all_traits` | `traits_api` | `/v1/traits` | none | extract `traits` | dataframe | non-empty and empty payload | done | |
-| trait | `GpmapClient.trait` | `trait_api`, `trait_coloc_pairs_api`, `get_gwas_api` | `/v1/traits/{id}`, `/v1/traits/{id}/coloc-pairs`, `/v1/gwas/{guid}` | trait_id required | GUID branch, merge associations, source_url | dict+dataframe | guid and non-guid, coloc toggles | done | |
-| traits | `GpmapClient.traits` | `specific_traits_api`, `trait_coloc_pairs_api`, `get_gwas_api` | `/v1/traits?...` + coloc endpoint + gwas endpoint | max 10 ids, no nulls | split guid/non-guid, merge upload results | dict+dataframe | mixed IDs, include_associations and include_coloc_pairs | done | |
+| trait_duplicates | `GpmapClient.trait_duplicates` | `trait_duplicates_api` | `/v1/traits/duplicates` | none | extract `duplicates` | dataframe | duplicate-group shape | done | |
+| trait | `GpmapClient.trait` | `trait_api`, `trait_coloc_pairs_api`, `trait_associations_full_api`, `get_gwas_api` | `/v1/traits/{id}`, `/v1/traits/{id}/coloc-pairs`, `/v1/traits/{id}/associations-full`, `/v1/gwas/{guid}` | trait_id required | GUID branch folds upload associations by `source`; otherwise fold associations into coloc groups, rare results and study extractions, masked full associations, `source_url` from `pipeline_id`, coloc pairs added after cleanup | dict+dataframe | guid and non-guid, coloc and full-association toggles | done | |
+| traits | `GpmapClient.traits` | `specific_traits_api`, `trait_coloc_pairs_api`, `get_gwas_api` | `/v1/traits?...` + coloc endpoint + gwas endpoint | max 10 ids, no missing ids | split guid/non-guid, fold associations (uploads by `source`), uploads add `trait_name` and mark existing rows `source="existing"`, cleanup, de-duplicated coloc pairs | dict+dataframe | mixed IDs, include_associations and include_coloc_pairs | done | |
 | all_genes | `GpmapClient.all_genes` | `genes_api` | `/v1/genes` | none | extract `genes` | dataframe | non-empty and empty payload | done | |
-| gene | `GpmapClient.gene` | `gene_api` | `/v1/genes/{id}` | gene_id required | cleanup + optional association merge | dict+dataframe | include flags behavior | done | |
-| genes | `GpmapClient.genes` | `specific_genes_api` | `/v1/genes?...` | max 10 ids, no nulls | dedupe ids + optional association merge | dict+dataframe | limit and empty and flags | done | |
-| variant | `GpmapClient.variant` | `variant_api`, `variant_summary_stats_api` | `/v1/variants/{id}`, `/v1/variants/{id}/summary-stats` | snp_id required | optional summary stats, merge associations | dict+dataframe | summary-stats extraction | done | |
-| variants | `GpmapClient.variants` | `variants_api` | `/v1/variants?...` | max 10 expand, max 50 non-expand | dedupe + optional association merge | dict+dataframe | expand and non-expand limits | done | |
-| region | `GpmapClient.region` | `region_api` | `/v1/regions/{id}` | region_id required | cleanup + optional association merge | dict+dataframe | include flags behavior | done | |
-| ld_matrix | `GpmapClient.ld_matrix` | `ld_matrix_by_variant_api`, `ld_matrix_by_snp_id_api` | `/v1/ld/matrix?...` | variant_ids required | numeric vs string branch | dict/dataframe | snp_id and variant_id paths | done | |
-| ld_proxies | `GpmapClient.ld_proxies` | `ld_proxies_by_variant_api`, `ld_proxies_by_snp_id_api` | `/v1/ld/proxies?...` | variant_ids required | numeric vs string branch | dict/dataframe | snp_id and variant_id paths | done | |
-| associations | `GpmapClient.associations` | `associations_api` | `/v1/associations?...` | snp_ids and study_ids required | extract `associations` | dataframe | id filtering and empty response | done | |
+| gene | `GpmapClient.gene` | `gene_api` | `/v1/genes/{id}` | gene_id required | drop tissues, fold associations, cleanup, coloc pair details | dict+dataframe | include flags behavior | done | |
+| genes | `GpmapClient.genes` | `specific_genes_api` | `/v1/genes?...` | max 10 ids, no missing ids | dedupe ids, drop tissues, fold associations, cleanup, coloc pair details | dict+dataframe | limit and empty and flags | done | |
+| variant | `GpmapClient.variant` | `variant_api`, `variant_summary_stats_api` | `/v1/variants/{id}`, `/v1/variants/{id}/summary-stats` | variant_id required | optional summary stats, fold associations, coloc pair details | dict+dataframe | summary-stats extraction | done | |
+| variants | `GpmapClient.variants` | `variants_api` | `/v1/variants?...` | max 10 expand, max 50 non-expand | dedupe, fold associations, cleanup | dict+dataframe | expand and non-expand limits | done | |
+| region | `GpmapClient.region` | `region_api` | `/v1/regions/{id}` | region_id required | fold associations, cleanup, coloc pair details | dict+dataframe | include flags behavior | done | |
+| ld_matrix | `GpmapClient.ld_matrix` | `ld_matrix_by_variant_api`, `ld_matrix_by_variant_id_api` | `/v1/ld/matrix?...` | variant_ids required | numeric vs string branch, `rsq`, empty `lds` when no pairs | dict/dataframe | variant_id and rsid paths | done | |
+| ld_proxies | `GpmapClient.ld_proxies` | `ld_proxies_by_variant_api`, `ld_proxies_by_variant_id_api` | `/v1/ld/proxies?...` | variant_ids required | numeric vs string branch, `rsq` | dict/dataframe | variant_id and rsid paths | done | |
+| associations | `GpmapClient.associations` | `associations_api` | `/v1/associations?...` | variant_ids and study_ids required | extract `associations`, placeholders as missing | dataframe | id filtering and empty response | done | |
 | get_all_gene_pleiotropies | `GpmapClient.get_all_gene_pleiotropies` | `gene_pleiotropies_api` | `/v1/pleiotropy/genes` | none | extract `genes` | dataframe | non-empty and empty payload | done | |
-| get_all_snp_pleiotropies | `GpmapClient.get_all_snp_pleiotropies` | `snp_pleiotropies_api` | `/v1/pleiotropy/snps` | none | extract `snps` | dataframe | non-empty and empty payload | done | |
-| get_gwas | `GpmapClient.get_gwas` | `get_gwas_api` | `/v1/gwas/{id}`, `/v1/gwas/{id}/summary-stats` | gwas_id required | optional summary stats fetch | dict+dataframe | with and without summary stats | done | |
-| upload_gwas | `GpmapClient.upload_gwas` | `upload_gwas_api` | `/v1/gwas` | file exists,<1GB; category/ancestry/reference_build; thresholds | multipart upload + JSON request | dict | validation failures + success | done | |
+| get_all_variant_pleiotropies | `GpmapClient.get_all_variant_pleiotropies` | `variant_pleiotropies_api` | `/v1/pleiotropy/snps` | none | extract `snps` | dataframe | non-empty and empty payload | done | `get_all_snp_pleiotropies` remains as a deprecated alias |
+| compare_upload | `GpmapClient.compare_upload` | n/a | n/a | upload with associations; single trait id or compared GUID | lead effect per shared coloc group; coloc pairs upload-first | dict+dataframe | trait, compared upload, placeholder, no overlap, errors | done | |
+| get_gwas | `GpmapClient.get_gwas` | `get_gwas_api`, `get_gwas_summary_stats_api` | `/v1/gwas/{id}`, `/v1/gwas/{id}/summary-stats` | gwas_id required | optional summary stats; associations folded by `source`; coloc pair details | dict+dataframe | with and without summary stats | done | |
+| upload_gwas | `GpmapClient.upload_gwas` | `upload_gwas_api` | `/v1/gwas` | file exists,<1GB; variable_type (deprecated category)/ancestry/reference_build; thresholds; `*_col` arguments; columns present in file header; comparison GUIDs | multipart upload + JSON request; deprecated `column_names` mapped to API names | dict | validation failures + success | done | |
+| delete_gwas | `GpmapClient.delete_gwas` | `delete_gwas_api` | `DELETE /v1/gwas/{guid}` | GUID and non-blank email | JSON body with email; API errors re-raised with the detail | dict | validation, success, not found | done | |

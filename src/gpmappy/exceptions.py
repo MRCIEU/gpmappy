@@ -12,12 +12,32 @@ class ValidationError(GpmappyError):
 
 
 class ApiError(GpmappyError):
-    """Raised when the remote API returns a non-success status code."""
+    """Raised when the remote API returns a non-success status code.
 
-    def __init__(self, status_code: int, message: str) -> None:
-        super().__init__(f"API error {status_code}: {message}")
+    ``detail`` is the API's explanation (its ``detail`` field) when it sent one.
+    """
+
+    def __init__(self, status_code: int, message: str, detail: str | None = None) -> None:
+        super().__init__(message)
         self.status_code = status_code
         self.message = message
+        self.detail = message if detail is None else detail
+
+
+class RateLimitError(ApiError):
+    """Raised when the API keeps responding 429 (Too Many Requests) after all retries."""
+
+    def __init__(self, retries: int) -> None:
+        super().__init__(
+            429,
+            f"GPMap API rate limit exceeded after {retries} retries. "
+            "Please wait a moment and try again.",
+        )
+        self.retries = retries
+
+
+class ApiVersionError(GpmappyError):
+    """Raised when this gpmappy version does not support the API's version."""
 
 
 class TimeoutError(GpmappyError):

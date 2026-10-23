@@ -1,0 +1,48 @@
+{
+ "coloc_pair_column_names": [
+  "variant_id",
+  "study_extraction_a_id",
+  "study_extraction_b_id",
+  "ld_block_id",
+  "h3",
+  "h4",
+  "false_positive",
+  "false_negative",
+  "in_coloc_group"
+ ],
+ "coloc_pair_rows": [
+  [
+   80732,
+   77675,
+   77676,
+   15,
+   0.030137140303850174,
+   0.9698628783226013,
+   false,
+   false,
+   true
+  ],
+  [
+   80732,
+   77675,
+   77914,
+   15,
+   0.03038225881755352,
+   0.9696177244186401,
+   false,
+   false,
+   true
+  ],
+  [
+   80732,
+   77675,
+   77915,
+   15,
+   0.0323493517935276,
+   0.9676506519317627,
+   false,
+   false,
+   true
+  ]
+ ]
+}

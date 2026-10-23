@@ -1,0 +1,9 @@
+{
+  "id": "upload_gwas_unknown_legacy_column",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [
+    "column_names is deprecated, please use the *_col arguments instead (e.g. chr_col = \"chr\")"
+  ],
+  "error": "Unknown column_names: POS. Accepted names are: SNP, RSID, CHR, BP, EA, OA, P, EAF, BETA, SE, OR, OR_LB, OR_UB"
+}

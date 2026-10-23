@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from gpmappy.exceptions import ApiError
 from gpmappy.parsers import read_tsv_gz_records
 from gpmappy.transport import HttpTransport
 
@@ -14,8 +15,10 @@ from gpmappy.transport import HttpTransport
 def get_gwas_api(
     transport: HttpTransport,
     gwas_id: str,
+    include_associations: bool = False,
 ) -> dict[str, Any]:
-    return transport.request_json("GET", f"/v1/gwas/{gwas_id}")
+    params = {"include_associations": "true"} if include_associations else None
+    return transport.request_json("GET", f"/v1/gwas/{gwas_id}", params=params)
 
 
 def get_gwas_summary_stats_api(
@@ -38,19 +41,20 @@ def upload_gwas_api(  # noqa: PLR0913
     p_value_threshold: float,
     column_names: dict[str, str],
     email: str,
-    category: str,
+    variable_type: str,
     is_published: bool,
     doi: str | None,
     should_be_added: bool,
     ancestry: str,
     sample_size: int | float,
     reference_build: str,
+    compare_with_upload_guids: list[str] | None = None,
 ) -> dict[str, Any]:
     request_payload = {
         "reference_build": reference_build,
         "email": email,
         "name": name,
-        "category": category,
+        "variable_type": variable_type,
         "is_published": is_published,
         "doi": doi,
         "should_be_added": should_be_added,
@@ -58,6 +62,7 @@ def upload_gwas_api(  # noqa: PLR0913
         "sample_size": sample_size,
         "p_value_threshold": p_value_threshold,
         "column_names": column_names,
+        "compare_with_upload_guids": compare_with_upload_guids,
     }
     with open(file, "rb") as fobj:
         files = {
@@ -65,3 +70,16 @@ def upload_gwas_api(  # noqa: PLR0913
             "request": (None, json.dumps(request_payload)),
         }
         return transport.request_json("POST", "/v1/gwas", files=files)
+
+
+def delete_gwas_api(
+    transport: HttpTransport,
+    guid: str,
+    email: str,
+) -> dict[str, Any]:
+    try:
+        return transport.request_json("DELETE", f"/v1/gwas/{guid}", json_body={"email": email})
+    except ApiError as exc:
+        raise ApiError(
+            exc.status_code, f"Failed to delete GWAS upload {guid}: {exc.detail}", exc.detail
+        ) from exc

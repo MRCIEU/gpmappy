@@ -1,0 +1,47 @@
+{
+  "id": "upload_gwas_column_args",
+  "function": "upload_gwas",
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/v1/gwas",
+      "query": {},
+      "body": {
+        "file": "gwas.tsv",
+        "request": {
+          "reference_build": "GRCh38",
+          "email": "user@example.com",
+          "name": "My uploaded GWAS",
+          "variable_type": "continuous",
+          "is_published": false,
+          "doi": null,
+          "should_be_added": false,
+          "ancestry": "EUR",
+          "sample_size": 1000,
+          "p_value_threshold": 5e-08,
+          "column_names": {
+            "CHR": "chr",
+            "BP": "pos",
+            "EA": "ea",
+            "OA": "oa",
+            "P": "p",
+            "EAF": "eaf",
+            "BETA": "beta",
+            "SE": "se"
+          },
+          "compare_with_upload_guids": [
+            "11111111-2222-3333-4444-555555555555"
+          ]
+        }
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "guid": "3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b",
+      "status": "processing"
+    }
+  }
+}
