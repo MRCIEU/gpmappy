@@ -38,7 +38,7 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
     monkeypatch.setattr(
         "gpmappy.client.trait_api",
         lambda *_args, **_kwargs: {
-            "trait": {"trait": "ieu-a-2"},
+            "trait": {"pipeline_id": "ieu-a-2"},
             "coloc_groups": [{"study_id": 1, "variant_id": 1}],
             "rare_results": [{"study_id": 1, "variant_id": 1}],
             "associations": [{"study_id": 1, "variant_id": 1, "beta": 0.1}],
@@ -63,11 +63,13 @@ def patched_client(monkeypatch: pytest.MonkeyPatch) -> GpmapClient:
     monkeypatch.setattr(
         "gpmappy.client.get_gwas_api",
         lambda *_args, **_kwargs: {
-            "trait": {"id": 99, "trait": "uploaded"},
-            "coloc_groups": [{"study_id": 2, "variant_id": 2}],
-            "study_extractions": [{"id": 2}],
+            "trait": {"id": 99, "name": "uploaded"},
+            "coloc_groups": [
+                {"study_id": 2, "variant_id": 2, "source": "existing", "gwas_upload_id": None}
+            ],
+            "study_extractions": [{"id": 2, "source": "existing"}],
             "rare_results": [{"study_id": 2, "variant_id": 2}],
-            "associations": [{"study_id": 2, "variant_id": 2, "beta": 0.4}],
+            "associations": [{"study_id": 2, "variant_id": 2, "source": "existing", "beta": 0.4}],
         },
     )
 
@@ -212,7 +214,7 @@ def test_client_happy_paths(patched_client: GpmapClient) -> None:
     t_guid = client.trait(
         "123e4567-e89b-12d3-a456-426614174000", include_associations=True, as_dataframe=False
     )
-    assert t_guid["trait"]["trait"] == "uploaded"
+    assert t_guid["trait"]["name"] == "uploaded"
     assert t_guid["coloc_groups"][0]["beta"] == UPLOAD_BETA
 
     tr = client.traits(
@@ -220,7 +222,7 @@ def test_client_happy_paths(patched_client: GpmapClient) -> None:
     )
     assert len(tr["traits"]) == TRAIT_COUNT
     only_uploads = client.traits(["123e4567-e89b-12d3-a456-426614174000"], as_dataframe=False)
-    assert only_uploads["traits"][0]["trait"] == "uploaded"
+    assert only_uploads["traits"][0]["trait_name"] == "uploaded"
 
     assert "gene" in client.gene("ENSG1", include_associations=True, as_dataframe=False)
     assert "genes" in client.genes(["ENSG1"], include_associations=True, as_dataframe=False)

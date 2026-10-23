@@ -1,10 +1,12 @@
 """Python client for the OpenGWAS genotype-phenotype map (GPMap) API."""
 
 from gpmappy.client import GpmapClient
+from gpmappy.version import package_version
 from gpmappy.wrappers import (
     all_genes,
     all_traits,
     associations,
+    compare_upload,
     delete_gwas,
     gene,
     genes,
@@ -13,6 +15,7 @@ from gpmappy.wrappers import (
     get_all_variant_pleiotropies,
     get_default_client,
     get_gwas,
+    gpmap_available,
     health_api,
     ld_matrix,
     ld_proxies,
@@ -29,11 +32,14 @@ from gpmappy.wrappers import (
     version_api,
 )
 
+__version__ = package_version()
+
 __all__ = [
     "GpmapClient",
     "all_genes",
     "all_traits",
     "associations",
+    "compare_upload",
     "delete_gwas",
     "gene",
     "genes",
@@ -42,6 +48,7 @@ __all__ = [
     "get_all_variant_pleiotropies",
     "get_default_client",
     "get_gwas",
+    "gpmap_available",
     "health_api",
     "ld_matrix",
     "ld_proxies",

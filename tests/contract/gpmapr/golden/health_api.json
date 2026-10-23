@@ -19,7 +19,7 @@
         "items": []
       },
       "in_progress_queue_size": 0,
-      "dead_letter_queue": 12
+      "dead_letter_queue": 0
     }
   }
 }

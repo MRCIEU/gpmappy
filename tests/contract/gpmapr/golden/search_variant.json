@@ -4,12 +4,7 @@
   "requests": [
     {
       "method": "GET",
-      "path": "/v1/search/options",
-      "query": {}
-    },
-    {
-      "method": "GET",
-      "path": "/v1/search/variant/rs28971325",
+      "path": "/v1/search/variant/rs9939609",
       "query": {
         "rsquared_threshold": "0.8"
       }
@@ -24,36 +19,29 @@
       "num_coloc_groups",
       "num_coloc_studies",
       "num_rare_results",
+      "rsq",
       "type",
       "type_id"
     ],
     "rows": [
       {
         "type": "original_variant",
-        "name": "22:45971264 G/A",
-        "type_id": 5553693,
+        "name": "16:53786615 T/A",
+        "type_id": 3336955,
+        "num_coloc_groups": 0,
+        "num_coloc_studies": 0,
+        "num_rare_results": 0,
+        "call": "variant(3336955)"
+      },
+      {
+        "type": "proxy_variant",
+        "name": "16:53767042 T/C",
+        "type_id": 3336866,
+        "rsq": 0.95,
         "num_coloc_groups": 1,
-        "num_coloc_studies": 2,
+        "num_coloc_studies": 3,
         "num_rare_results": 0,
-        "call": "variant(5553693)"
-      },
-      {
-        "type": "proxy_variant",
-        "name": "22:45969000 A/G",
-        "type_id": 5553688,
-        "num_coloc_groups": 30,
-        "num_coloc_studies": 1,
-        "num_rare_results": 0,
-        "call": "variant(5553688)"
-      },
-      {
-        "type": "proxy_variant",
-        "name": "22:45971500 C/T",
-        "type_id": 5553694,
-        "num_coloc_groups": 9,
-        "num_coloc_studies": 1,
-        "num_rare_results": 0,
-        "call": "variant(5553694)"
+        "call": "variant(3336866)"
       }
     ]
   }

@@ -1,0 +1,15 @@
+{
+  "id": "compare_upload_two_trait_ids",
+  "function": "compare_upload",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/gwas/7a289615-c1b4-91f3-3d97-887f60de9155",
+      "query": {
+        "include_associations": "true"
+      }
+    }
+  ],
+  "warnings": [],
+  "error": "trait_id must be a single trait id or GWAS upload GUID"
+}

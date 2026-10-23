@@ -1,0 +1,23 @@
+{
+  "id": "ld_matrix_without_pairs",
+  "function": "ld_matrix",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/ld/matrix",
+      "query": {
+        "variant_ids": ["5553693", "80717"]
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "lds": {
+        "kind": "list",
+        "items": []
+      }
+    }
+  }
+}

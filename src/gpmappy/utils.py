@@ -7,6 +7,8 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 from urllib.parse import urlencode
 
+from gpmappy.merge import add_coloc_pair_details
+
 GUID_PATTERN = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 )
@@ -17,8 +19,10 @@ def is_guid(value: str | int) -> bool:
     return bool(GUID_PATTERN.match(str(value)))
 
 
-def cleanup_api_object(api_object: dict[str, object]) -> dict[str, object]:
-    return {k: v for k, v in api_object.items() if v not in (None, [], {})}
+def cleanup_api_object(api_object: dict[str, Any]) -> dict[str, Any]:
+    """Drop empty elements and describe both sides of any coloc pairs."""
+    cleaned = {k: v for k, v in api_object.items() if v not in (None, [], {})}
+    return add_coloc_pair_details(cleaned)
 
 
 def create_source_url(study_name: str) -> str:

@@ -1,8 +1,12 @@
 """Helpers for replaying gpmapr parity scenarios against gpmappy.
 
-The normalization here mirrors ``normalize()`` in
-scripts/parity/generate_gpmapr_contract.R so R and Python results can be compared
-structurally: objects, tables (records) and lists, with missing values dropped.
+The normalization here mirrors ``normalize()`` in scripts/parity/normalize.R so R
+and Python results can be compared structurally: objects, tables (records) and
+lists, with missing values dropped.
+
+Scenarios are served from one of two fixture sets, as by the R generator:
+"gpmapr" (gpmapr's recorded responses, vendored in gpmapr/fixtures/) and "edge"
+(gpmappy's hand-built edge cases in fixtures/).
 """
 
 from __future__ import annotations
@@ -15,7 +19,7 @@ from typing import Any
 
 import httpx
 
-from gpmappy.exceptions import ApiError
+from gpmappy.transport import api_error
 
 CONTRACT_DIR = Path(__file__).parent
 FIXTURES_DIR = CONTRACT_DIR / "fixtures"
@@ -23,7 +27,7 @@ GPMAPR_DIR = CONTRACT_DIR / "gpmapr"
 SCENARIOS: list[dict[str, Any]] = json.loads((CONTRACT_DIR / "scenarios.json").read_text())[
     "scenarios"
 ]
-ROUTES: list[dict[str, Any]] = json.loads((FIXTURES_DIR / "routes.json").read_text())
+GPMAPR_FIXTURES_DIR = GPMAPR_DIR / "fixtures"
 
 
 def load_golden(scenario_id: str) -> dict[str, Any]:
@@ -34,11 +38,8 @@ def load_surface() -> dict[str, Any]:
     return json.loads((GPMAPR_DIR / "surface.json").read_text())
 
 
-def resolve_args(args: dict[str, Any]) -> dict[str, Any]:
-    return {
-        key: value.replace("{fixtures}", str(FIXTURES_DIR)) if isinstance(value, str) else value
-        for key, value in args.items()
-    }
+def resolve_fixture_paths(value: Any) -> Any:
+    return value.replace("{fixtures}", str(FIXTURES_DIR)) if isinstance(value, str) else value
 
 
 # ---------------------------------------------------------------------------
@@ -65,21 +66,55 @@ def _normalize_query(params: Any) -> dict[str, Any]:
     }
 
 
-def _route_query(route: dict[str, Any]) -> dict[str, Any]:
+def _route_query(query: dict[str, Any]) -> dict[str, Any]:
     return {
         key: value[0] if isinstance(value, list) and len(value) == 1 else value
-        for key, value in sorted((route.get("query") or {}).items())
+        for key, value in sorted(query.items())
     }
 
 
-class FixtureTransport:
-    """Stands in for HttpTransport, serving tests/contract/fixtures and recording requests."""
+def _load_routes() -> dict[str, list[dict[str, Any]]]:
+    edge = [
+        {
+            "method": route["method"],
+            "path": route["path"],
+            "query": _route_query(route.get("query") or {}),
+            "status": int(route.get("status", 200)),
+            "file": FIXTURES_DIR / "responses" / route["response"],
+        }
+        for route in json.loads((FIXTURES_DIR / "routes.json").read_text())
+    ]
+    recorded = []
+    for url, file in json.loads((GPMAPR_FIXTURES_DIR / "index.json").read_text()).items():
+        path, _, query = url.partition("?")
+        recorded.append(
+            {
+                "method": "GET",
+                "path": path,
+                "query": _normalize_query(httpx.QueryParams(query)),
+                "status": 200,
+                "file": GPMAPR_FIXTURES_DIR / file,
+            }
+        )
+    return {"edge": edge, "gpmapr": recorded}
 
-    def __init__(self) -> None:
+
+ROUTES = _load_routes()
+
+
+class FixtureTransport:
+    """Stands in for HttpTransport, serving a fixture set and recording requests."""
+
+    def __init__(self, fixture_set: str = "gpmapr") -> None:
+        self.routes = ROUTES[fixture_set]
         self.requests: list[dict[str, Any]] = []
 
     def close(self) -> None:
         pass
+
+    def ensure_api_compatible(self) -> bool:
+        # The version check is unit-tested; every request here is a fixture.
+        return True
 
     def request_json(  # noqa: PLR0913
         self,
@@ -105,16 +140,15 @@ class FixtureTransport:
             }
         self.requests.append(request)
 
-        for route in ROUTES:
+        for route in self.routes:
             if (
                 route["method"] == method
                 and route["path"] == path
-                and _route_query(route) == request["query"]
+                and route["query"] == request["query"]
             ):
-                text = (FIXTURES_DIR / "responses" / route["response"]).read_text()
-                status = int(route.get("status", 200))
-                if status >= httpx.codes.BAD_REQUEST:
-                    raise ApiError(status, text)
+                text = route["file"].read_text()
+                if route["status"] >= httpx.codes.BAD_REQUEST:
+                    raise api_error(route["status"], text)
                 payload: dict[str, Any] = json.loads(text)
                 return payload
         raise AssertionError(f"No fixture route for {method} {path} {request['query']}")
@@ -271,3 +305,48 @@ def apply_divergences(
             unexpected.append(diff)
     stale = [pattern for pattern in patterns if pattern not in used]
     return unexpected, stale
+
+
+def sort_tables(node: Any, top_level: bool = True) -> Any:
+    """Sort the rows of nested tables by their id columns, for comparing results that the
+    API returned in a different row order (it does not order coloc groups or rare results).
+    The top-level table keeps its order, as search results are ordered on purpose."""
+    if isinstance(node, dict) and node.get("kind") == "table":
+        if not top_level:
+            node["rows"] = sorted(node["rows"], key=_row_key)
+        for row in node["rows"]:
+            for value in row.values():
+                sort_tables(value, top_level=False)
+    elif isinstance(node, dict) and node.get("kind") == "object":
+        for value in node["fields"].values():
+            sort_tables(value, top_level=False)
+    elif isinstance(node, dict) and node.get("kind") == "list":
+        for value in node["items"]:
+            sort_tables(value, top_level=False)
+    return node
+
+
+_ROW_KEY_COLUMNS = (
+    "coloc_group_id",
+    "rare_result_group_id",
+    "study_extraction_id",
+    "id",
+    "study_id",
+    "variant_id",
+    "lead_variant_id",
+    "proxy_variant_id",
+    "study_extraction_a_id",
+    "study_extraction_b_id",
+    "trait_id",
+    "gene_id",
+    "name",
+)
+
+
+def _row_key(row: dict[str, Any]) -> list[tuple[int, float, str]]:
+    key = []
+    for column in _ROW_KEY_COLUMNS:
+        value = row.get(column)
+        number = _number(value)
+        key.append((0, number, "") if number is not None else (1, 0.0, str(value)))
+    return key

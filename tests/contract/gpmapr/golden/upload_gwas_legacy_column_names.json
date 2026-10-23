@@ -12,7 +12,7 @@
           "reference_build": "GRCh38",
           "email": "user@example.com",
           "name": "My uploaded GWAS",
-          "category": "continuous",
+          "variable_type": "continuous",
           "is_published": false,
           "doi": null,
           "should_be_added": false,

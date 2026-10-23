@@ -20,26 +20,30 @@
           "ld_block_id",
           "lead_variant_id",
           "proxy_variant_id",
-          "r"
+          "r",
+          "rsq"
         ],
         "rows": [
           {
             "lead_variant_id": 5553693,
             "proxy_variant_id": 5553688,
             "ld_block_id": 1354,
-            "r": 0.941118001937866
+            "r": 0.941118001937866,
+            "rsq": 0.89
           },
           {
             "lead_variant_id": 5553693,
             "proxy_variant_id": 5553689,
             "ld_block_id": 1354,
-            "r": 0.940904021263123
+            "r": 0.940904021263123,
+            "rsq": 0.89
           },
           {
             "lead_variant_id": 5553693,
             "proxy_variant_id": 5553736,
             "ld_block_id": 1354,
-            "r": 0.933318018913269
+            "r": 0.933318018913269,
+            "rsq": 0.87
           }
         ]
       }

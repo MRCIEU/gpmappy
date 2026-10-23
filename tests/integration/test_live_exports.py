@@ -1,15 +1,19 @@
 """Live checks of every export, mirroring gpmapr's tests/testthat/test_exported_functions.R.
 
-Run with ``pytest --run-live`` (or GPMAPPY_RUN_LIVE=1); they are skipped otherwise.
+Run with ``pytest --run-live`` (or GPMAPPY_RUN_LIVE=1); they are skipped otherwise. They
+use the API at $GPMAP_URL (default: production), e.g. GPMAP_URL=http://localhost:8000.
 """
 
 from __future__ import annotations
 
+import os
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
 
 from gpmappy import (
+    GpmapClient,
     all_genes,
     all_traits,
     associations,
@@ -18,14 +22,21 @@ from gpmappy import (
     genes,
     get_all_gene_pleiotropies,
     get_all_variant_pleiotropies,
+    get_default_client,
+    gpmap_available,
     health_api,
+    ld_matrix,
+    ld_proxies,
     search_gpmap,
+    set_default_client,
     trait,
     trait_duplicates,
     traits,
     variant,
     variants,
 )
+from gpmappy.config import GpmapConfig
+from gpmappy.constants import PRODUCTION_BASE_URL
 from gpmappy.exceptions import ApiError
 
 pytestmark = [pytest.mark.integration, pytest.mark.live]
@@ -34,12 +45,48 @@ TRAIT_ID = 5020
 VARIANT_ID = 5553693
 
 
+@pytest.fixture(scope="module", autouse=True)
+def live_client() -> Iterator[None]:
+    original = get_default_client()
+    set_default_client(
+        GpmapClient(GpmapConfig(base_url=os.environ.get("GPMAP_URL", PRODUCTION_BASE_URL)))
+    )
+    yield
+    set_default_client(original)
+
+
 def _column(rows: list[dict[str, Any]], name: str) -> list[Any]:
     return [row.get(name) for row in rows]
 
 
 def test_health_api() -> None:
     assert health_api()["status"] in {"healthy", "unhealthy"}
+
+
+def test_gpmap_available() -> None:
+    assert gpmap_available()
+
+
+def test_all_traits_and_trait_have_pipeline_id_and_variable_type() -> None:
+    assert {"pipeline_id", "variable_type"} <= set(all_traits(as_dataframe=False)[0])
+    result = trait(TRAIT_ID, as_dataframe=False)
+    assert isinstance(result["trait"]["pipeline_id"], str)
+    assert result["trait"]["source_url"].startswith("https://opengwas.io/datasets/")
+
+
+def test_associations_are_folded_into_the_tables() -> None:
+    result = trait(TRAIT_ID, include_associations=True, as_dataframe=False)
+    assert "associations" not in result
+    assert {"beta", "se"} <= set(result["coloc_groups"][0])
+    assert {"beta", "se"} <= set(result["study_extractions"][0])
+
+
+def test_ld_results_have_r_squared() -> None:
+    pairs = ld_matrix([VARIANT_ID, 5553688])["lds"]
+    assert pairs
+    assert all(pair["rsq"] == round(pair["r"] ** 2, 2) for pair in pairs)
+    assert ld_matrix([VARIANT_ID, 80717])["lds"] == []
+    assert {"r", "rsq"} <= set(ld_proxies([VARIANT_ID])["lds"][0])
 
 
 def test_search_gpmap() -> None:

@@ -1,0 +1,23 @@
+[
+ {"id": "health_api", "function": "health_api", "args": {}},
+ {"id": "trait_duplicates", "function": "trait_duplicates", "args": {}},
+ {"id": "all_traits", "function": "all_traits", "args": {}},
+ {"id": "get_all_gene_pleiotropies", "function": "get_all_gene_pleiotropies", "args": {}},
+ {"id": "trait_basic", "function": "trait", "args": {"trait_id": 5020}},
+ {"id": "trait_everything", "function": "trait", "args": {"trait_id": 5020, "include_associations": true, "include_full_associations": true, "include_coloc_pairs": true}},
+ {"id": "traits_assoc_pairs", "function": "traits", "args": {"trait_ids": [4405, 4872], "include_associations": true, "include_coloc_pairs": true}},
+ {"id": "gene_assoc_pairs", "function": "gene", "args": {"gene_id": "WNT7B", "include_associations": true, "include_coloc_pairs": true}},
+ {"id": "genes_assoc", "function": "genes", "args": {"gene_ids": ["WNT7B", "WNT7A"], "include_associations": true}},
+ {"id": "variant_pairs", "function": "variant", "args": {"variant_id": 5553693, "include_coloc_pairs": true}},
+ {"id": "variants_expanded", "function": "variants", "args": {"variants": [5553693, 5553694], "expand": true, "include_associations": true}},
+ {"id": "variants_minimal", "function": "variants", "args": {"variants": ["rs1260326", "rs780094"]}},
+ {"id": "region_assoc_pairs", "function": "region", "args": {"region_id": 1354, "include_associations": true, "include_coloc_pairs": true}},
+ {"id": "associations", "function": "associations", "args": {"variant_ids": [80717], "study_ids": [926, 927]}},
+ {"id": "ld_matrix", "function": "ld_matrix", "args": {"variant_ids": [5553693, 5553688]}},
+ {"id": "ld_matrix_none", "function": "ld_matrix", "args": {"variant_ids": [5553693, 80717]}},
+ {"id": "ld_proxies", "function": "ld_proxies", "args": {"variant_ids": [5553693, 5553694]}},
+ {"id": "search_text", "function": "search_gpmap", "args": {"search_text": "haemoglobin"}},
+ {"id": "search_variant", "function": "search_gpmap", "args": {"search_text": "rs9939609"}},
+ {"id": "delete_not_found", "function": "delete_gwas", "args": {"gwas_id": "00000000-0000-0000-0000-000000000000", "email": "user@example.com"}},
+ {"id": "trait_missing", "function": "trait", "args": {"trait_id": 999999999}}
+]

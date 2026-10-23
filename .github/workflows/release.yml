@@ -1,9 +1,13 @@
 name: Publish
 
+# A push to main whose pyproject.toml version has no v<version> tag yet tags it, creates the
+# GitHub release (notes from that version's CHANGELOG.md section) and publishes to PyPI. Tagging
+# and publishing are in one workflow because a tag pushed with GITHUB_TOKEN does not trigger
+# other workflows.
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       repository:
@@ -16,7 +20,33 @@ on:
           - pypi
 
 jobs:
+  tag:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      created: ${{ steps.tag.outputs.created }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag and release a new version
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if git ls-remote --exit-code --tags origin "refs/tags/v$version" > /dev/null; then
+            echo "v$version is already tagged; nothing to release"
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          awk -v heading="## $version" '$0 == heading {found = 1; next} /^## / {found = 0} found' CHANGELOG.md > notes.md
+          gh release create "v$version" --target "$GITHUB_SHA" --title "gpmappy $version" --notes-file notes.md
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: tag
+    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || needs.tag.outputs.created == 'true') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

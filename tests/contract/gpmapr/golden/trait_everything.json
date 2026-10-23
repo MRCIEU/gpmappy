@@ -11,15 +11,15 @@
     },
     {
       "method": "GET",
+      "path": "/v1/traits/5020/associations-full",
+      "query": {}
+    },
+    {
+      "method": "GET",
       "path": "/v1/traits/5020/coloc-pairs",
       "query": {
         "h4_threshold": "0.8"
       }
-    },
-    {
-      "method": "GET",
-      "path": "/v1/traits/5020/associations-full",
-      "query": {}
     }
   ],
   "warnings": [],
@@ -31,7 +31,7 @@
         "fields": {
           "id": 5020,
           "data_type": "Phenotype",
-          "trait": "ukb-d-M13-FIBROBLASTIC",
+          "pipeline_id": "ukb-d-M13-FIBROBLASTIC",
           "trait_name": "Fibroblastic disorders",
           "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
           "common_study": {
@@ -43,7 +43,7 @@
               "trait_id": 5020,
               "ancestry": "EUR",
               "sample_size": 361194,
-              "category": "categorical",
+              "variable_type": "categorical",
               "source_id": 5,
               "variant_type": "Common",
               "p_value_threshold": 0.00015,
@@ -59,7 +59,7 @@
               "trait_id": 5020,
               "ancestry": "EUR",
               "sample_size": 142446,
-              "category": "categorical",
+              "variable_type": "categorical",
               "source_id": 8,
               "variant_type": "Rare Exome",
               "p_value_threshold": 0.00015,
@@ -264,11 +264,7 @@
             "source_id": 8,
             "source_name": "UK Biobank AstraZeneca PheWAS Portal v5.5",
             "source_url": "https://azphewas.com/",
-            "beta": 1.95021510124207,
-            "se": 0.344112604856491,
-            "p": 1.033e-05,
-            "eaf": 0.000266499991994351,
-            "imputed": false
+            "imputed": true
           }
         ]
       },
@@ -343,7 +339,7 @@
           }
         ]
       },
-      "associations": {
+      "full_associations": {
         "kind": "table",
         "columns": [
           "beta",
@@ -356,58 +352,36 @@
         ],
         "rows": [
           {
-            "variant_id": 5553677,
-            "study_id": 15980,
-            "beta": -0.247097000479698,
-            "se": 0.0373427011072636,
-            "p": 3.66556e-11,
-            "eaf": 0.270491987466812,
-            "imputed": false
+            "variant_id": 35095,
+            "study_id": 5020,
+            "beta": -0.00485249981284142,
+            "se": 0.00120198994409293,
+            "p": 5.41389713698011e-05,
+            "eaf": 0.00868044979870319,
+            "imputed": 0
           },
           {
-            "variant_id": 5553693,
-            "study_id": 5115,
-            "beta": 0.00652850978076458,
-            "se": 0.00113416998647153,
-            "p": 8.61033403325173e-09,
-            "eaf": 0.23293499648571,
-            "imputed": false
+            "variant_id": 14664,
+            "study_id": 5020,
+            "beta": -0.000939243996981531,
+            "se": 0.000238417997024953,
+            "p": 8.16732805245279e-05,
+            "eaf": 0.688557982444763,
+            "imputed": 0
           },
           {
-            "variant_id": 11703493,
-            "study_id": 53136,
-            "beta": 0.856115996837616,
-            "se": 0.202414631843567,
-            "p": 9.377e-05,
-            "eaf": 0.000236099993344396,
-            "imputed": false
+            "variant_id": 80717,
+            "study_id": 926,
+            "beta": 0.0153160002082586,
+            "se": 0.00241099996492267,
+            "p": 2.18997925035305e-10,
+            "eaf": 0.176053002476692,
+            "imputed": 0
           },
           {
-            "variant_id": 11476840,
-            "study_id": 53116,
-            "beta": 1.95021510124207,
-            "se": 0.344112604856491,
-            "p": 1.033e-05,
-            "eaf": 0.000266499991994351,
-            "imputed": false
-          },
-          {
-            "variant_id": 5553677,
-            "study_id": 15980,
-            "beta": 99,
-            "se": 0.0373427011072636,
-            "p": 3.66556e-11,
-            "eaf": 0.270491987466812,
-            "imputed": false
-          },
-          {
-            "variant_id": 1,
-            "study_id": 1,
-            "beta": 0.5,
-            "se": 0.1,
-            "p": 0.01,
-            "eaf": 0.2,
-            "imputed": true
+            "variant_id": 80717,
+            "study_id": 932,
+            "imputed": 1
           }
         ]
       },
@@ -457,47 +431,6 @@
             "false_positive": 0,
             "false_negative": 0,
             "in_coloc_group": 1
-          }
-        ]
-      },
-      "full_associations": {
-        "kind": "table",
-        "columns": [
-          "beta",
-          "eaf",
-          "imputed",
-          "p",
-          "se",
-          "study_id",
-          "variant_id"
-        ],
-        "rows": [
-          {
-            "variant_id": 35095,
-            "study_id": 5020,
-            "beta": -0.00485249981284142,
-            "se": 0.00120198994409293,
-            "p": 5.41389713698011e-05,
-            "eaf": 0.00868044979870319,
-            "imputed": 0
-          },
-          {
-            "variant_id": 14664,
-            "study_id": 5020,
-            "beta": -0.000939243996981531,
-            "se": 0.000238417997024953,
-            "p": 8.16732805245279e-05,
-            "eaf": 0.688557982444763,
-            "imputed": 0
-          },
-          {
-            "variant_id": 80717,
-            "study_id": 926,
-            "beta": 0.0153160002082586,
-            "se": 0.00241099996492267,
-            "p": 2.18997925035305e-10,
-            "eaf": 0.176053002476692,
-            "imputed": 0
           }
         ]
       }

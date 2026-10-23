@@ -30,6 +30,16 @@ def version_api() -> str:
     return get_default_client().version_api()
 
 
+def gpmap_available() -> bool:
+    return get_default_client().gpmap_available()
+
+
+def compare_upload(
+    upload: dict[str, Any], trait_id: Any, as_dataframe: bool | None = None
+) -> dict[str, TableLike]:
+    return get_default_client().compare_upload(upload, trait_id, as_dataframe=as_dataframe)
+
+
 def search_gpmap(
     search_text: str, rsquared_threshold: float = 0.8, as_dataframe: bool | None = None
 ) -> TableLike:
@@ -217,7 +227,7 @@ def upload_gwas(  # noqa: PLR0913
     p_value_threshold: float = 5e-8,
     column_names: dict[str, str] | None = None,
     email: str | None = None,
-    category: str = "continuous",
+    variable_type: str = "continuous",
     is_published: bool = False,
     doi: str | None = None,
     should_be_added: bool = False,
@@ -238,6 +248,7 @@ def upload_gwas(  # noqa: PLR0913
     or_ub_col: str | None = None,
     snp_col: str | None = None,
     rsid_col: str | None = None,
+    category: str | None = None,
 ) -> dict[str, Any]:
     return get_default_client().upload_gwas(
         file=file,
@@ -245,7 +256,7 @@ def upload_gwas(  # noqa: PLR0913
         p_value_threshold=p_value_threshold,
         column_names=column_names,
         email=email,
-        category=category,
+        variable_type=variable_type,
         is_published=is_published,
         doi=doi,
         should_be_added=should_be_added,
@@ -266,6 +277,7 @@ def upload_gwas(  # noqa: PLR0913
         or_ub_col=or_ub_col,
         snp_col=snp_col,
         rsid_col=rsid_col,
+        category=category,
     )
 
 

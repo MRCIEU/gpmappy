@@ -1,0 +1,27 @@
+{
+  "id": "compare_upload_no_shared_groups",
+  "function": "compare_upload",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/gwas/7a289615-c1b4-91f3-3d97-887f60de9155",
+      "query": {
+        "include_associations": "true"
+      }
+    }
+  ],
+  "warnings": [],
+  "result": {
+    "kind": "object",
+    "fields": {
+      "coloc_groups": {
+        "kind": "list",
+        "items": []
+      },
+      "coloc_pairs": {
+        "kind": "list",
+        "items": []
+      }
+    }
+  }
+}

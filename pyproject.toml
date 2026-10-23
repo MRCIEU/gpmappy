@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gpmappy"
-version = "0.2.0"
+version = "1.0.0"
 description = "Python client for the OpenGWAS genotype-phenotype map API"
 readme = "PYPI.md"
 license = { text = "MIT" }

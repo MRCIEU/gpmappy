@@ -34,9 +34,16 @@
 
 `tests/contract/` checks gpmappy against the gpmapr R package:
 
-- `fixtures/`: trimmed API responses and the routes that serve them.
-- `scenarios.json`: calls to make, e.g. `trait(trait_id = 5020, include_associations = TRUE)`.
-- `gpmapr/surface.json`: every gpmapr export with its parameters and defaults.
+- `gpmapr/fixtures/`: gpmapr's own recorded API responses (copied from its
+  `tests/testthat/fixtures`), served by the URLs in their `index.json`.
+- `fixtures/`: gpmappy's hand-built edge cases (matching, duplicate and placeholder
+  associations, search ties, coloc pairs endpoints, uploads and deletes) and the routes
+  that serve them.
+- `scenarios.json`: calls to make, e.g. `trait(trait_id = 5020, include_associations = TRUE)`,
+  and the fixture set each uses (`"fixtures": "edge"`, default gpmapr's). An argument
+  `{"$call": {...}}` is the result of another call, e.g. `compare_upload(upload = get_gwas(...))`.
+- `gpmapr/surface.json`: every gpmapr export with its parameters and defaults, and the API
+  versions it supports (gpmappy must support the same ones).
 - `gpmapr/golden/<id>.json`: for each scenario, the requests gpmapr made and its
   normalized result, error and warnings.
 
@@ -52,8 +59,18 @@ The golden files come from gpmapr itself:
 Rscript scripts/parity/generate_gpmapr_contract.R [path/to/gpmapr]
 ```
 
-The script sources gpmapr's R files (no install or network needed) and serves every
-request from the fixtures. When gpmapr is checked out next to this repository (or at
+The script sources gpmapr's R files (no install or network needed), copies gpmapr's
+recorded fixtures, and serves every request from the fixtures. When gpmapr is checked out next to this repository (or at
 `$GPMAPR_PATH`) and `Rscript` is available, `test_gpmapr_snapshot_is_current` regenerates
 the snapshot and fails if gpmapr has changed. Regenerate it, review the diff, and port
 the change to gpmappy. Add a scenario (and fixture routes) for any new behaviour.
+
+### Live parity
+
+`tests/integration/test_live_parity.py` runs the calls in
+`tests/integration/live_parity_scenarios.json` through both packages against a real API
+and compares the results (ignoring row order, which the API doesn't fix):
+
+```bash
+GPMAPPY_PARITY_URL=http://localhost:8000 pytest --run-live tests/integration/test_live_parity.py
+```

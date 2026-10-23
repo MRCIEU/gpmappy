@@ -325,11 +325,11 @@
   {
    "variant_id": 12272936,
    "study_id": 54175,
-   "beta": 0.0625,
-   "se": 0.002,
-   "p": 1.5e-09,
-   "eaf": 0.31,
-   "imputed": false
+   "beta": 0,
+   "se": 1,
+   "p": 1,
+   "eaf": 0.27,
+   "imputed": true
   },
   {
    "variant_id": 5547108,

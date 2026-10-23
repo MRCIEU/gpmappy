@@ -1,0 +1,15 @@
+{
+  "id": "compare_upload_unknown_upload",
+  "function": "compare_upload",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/v1/gwas/7a289615-c1b4-91f3-3d97-887f60de9155",
+      "query": {
+        "include_associations": "true"
+      }
+    }
+  ],
+  "warnings": [],
+  "error": "trait_id 99999999-2222-3333-4444-555555555555 is not a GWAS upload this upload was compared with"
+}

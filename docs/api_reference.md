@@ -2,7 +2,7 @@
 
 Core client:
 
-- `GpmapClient.health_api()`
+- `GpmapClient.health_api()`, `GpmapClient.gpmap_available()`
 - `GpmapClient.version_api()`
 - `GpmapClient.search_gpmap()`
 - `GpmapClient.all_traits()`, `GpmapClient.trait()`, `GpmapClient.traits()`,
@@ -13,7 +13,8 @@ Core client:
 - `GpmapClient.ld_matrix()`, `GpmapClient.ld_proxies()`
 - `GpmapClient.associations()`
 - `GpmapClient.get_all_gene_pleiotropies()`, `GpmapClient.get_all_variant_pleiotropies()`
-- `GpmapClient.get_gwas()`, `GpmapClient.upload_gwas()`, `GpmapClient.delete_gwas()`
+- `GpmapClient.get_gwas()`, `GpmapClient.upload_gwas()`, `GpmapClient.delete_gwas()`,
+  `GpmapClient.compare_upload()`
 
 Module wrappers mirror the same names.
 
@@ -43,11 +44,28 @@ upload = upload_gwas(
     beta_col="beta", se_col="se",
     compare_with_upload_guids=["<guid of an earlier upload>"],
 )
-trait(upload["guid"], include_associations=True)  # once processing has finished
+result = get_gwas(upload["guid"], include_associations=True)  # once processing has finished
+comparison = compare_upload(result, 2527)  # effects of the upload and trait 2527 side by side
 ```
+
+Upload results combine the upload's rows with the existing studies they colocalise with.
+Every row of `study_extractions` and `coloc_groups` has a `source` ("upload" or
+"existing") and a `gwas_upload_id`; upload and existing study extractions have separate
+ids, so identify one by `source` and its id together.
 
 The `column_names` mapping (e.g. `{"CHR": "chr"}`) still works but raises a
 `FutureWarning`. Delete an upload with `delete_gwas(guid, email)` using the same email.
+
+## API versions and errors
+
+gpmappy 1.0 supports version 1.1.0 of the GPMap API. The first request to an API checks
+its version; if it isn't supported, requests raise `gpmappy.exceptions.ApiVersionError`
+(set `GpmapConfig(check_api_version=False)` to skip the check). `gpmap_available()` says
+whether the API can be reached and is supported, without raising.
+
+HTTP errors raise `ApiError` with a message like
+`GPMap API request failed (HTTP 404): Trait 999999999 not found` (the API's explanation is
+in `.detail`, the status in `.status_code`).
 
 ## Rate limiting
 

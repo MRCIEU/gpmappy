@@ -34,10 +34,15 @@ from gpmappy.api.traits import (
 )
 from gpmappy.api.variants import variant_api, variant_summary_stats_api, variants_api
 from gpmappy.cache import TTLCache
+from gpmappy.compare import compare_upload
 from gpmappy.config import ApiEnvironment, GpmapConfig
 from gpmappy.constants import DEV_BASE_URL, MAX_IDS_EXPAND, MAX_IDS_NON_EXPAND, PRODUCTION_BASE_URL
-from gpmappy.exceptions import ValidationError
-from gpmappy.merge import merge_associations, merge_gwas_upload_associations
+from gpmappy.exceptions import GpmappyError, ValidationError
+from gpmappy.merge import (
+    fold_associations,
+    fold_upload_associations,
+    mask_padded_associations,
+)
 from gpmappy.tabular import TableLike, records_to_table
 from gpmappy.transport import HttpTransport
 from gpmappy.upload import (
@@ -62,6 +67,7 @@ class GpmapClient:
             rate_limit_max_retries=self._config.rate_limit_max_retries,
             rate_limit_base_delay=self._config.rate_limit_base_delay,
             rate_limit_max_delay=self._config.rate_limit_max_delay,
+            check_api_version=self._config.check_api_version,
         )
         self._search_cache: TTLCache[list[dict[str, Any]]] = TTLCache(ttl_seconds=600)
 
@@ -99,6 +105,7 @@ class GpmapClient:
             rate_limit_max_retries=self._config.rate_limit_max_retries,
             rate_limit_base_delay=self._config.rate_limit_base_delay,
             rate_limit_max_delay=self._config.rate_limit_max_delay,
+            check_api_version=self._config.check_api_version,
         )
 
     def health_api(self) -> dict[str, object]:
@@ -106,6 +113,20 @@ class GpmapClient:
 
     def version_api(self) -> str:
         return version_api(self._transport)
+
+    def gpmap_available(self) -> bool:
+        """Whether the API can be reached and is a version this gpmappy supports. Never raises."""
+        try:
+            health_api(self._transport)
+            return self._transport.ensure_api_compatible()
+        except GpmappyError:
+            return False
+
+    def compare_upload(
+        self, upload: dict[str, Any], trait_id: Any, as_dataframe: bool | None = None
+    ) -> dict[str, TableLike]:
+        """See :func:`gpmappy.compare.compare_upload`."""
+        return compare_upload(upload, trait_id, as_dataframe=as_dataframe)
 
     def all_traits(self, as_dataframe: bool | None = None) -> TableLike:
         payload = traits_api(self._transport)
@@ -130,7 +151,8 @@ class GpmapClient:
     ) -> TableLike:
         payload = associations_api(self._transport, variant_ids=variant_ids, study_ids=study_ids)
         return records_to_table(
-            _ensure_record_list(payload.get("associations")), as_dataframe=as_dataframe
+            mask_padded_associations(_ensure_record_list(payload.get("associations"))),
+            as_dataframe=as_dataframe,
         )
 
     def get_all_gene_pleiotropies(self, as_dataframe: bool | None = None) -> TableLike:
@@ -165,33 +187,34 @@ class GpmapClient:
             raise ValidationError("trait_id is required")
 
         if is_guid(trait_id):
-            trait_info = get_gwas_api(
-                self._transport, str(trait_id), include_associations=include_associations
-            )
-            associations = _ensure_record_list(trait_info.get("associations"))
-            if include_associations and associations:
-                trait_info["coloc_groups"] = merge_gwas_upload_associations(
-                    _ensure_record_list(trait_info.get("coloc_groups")), associations
+            trait_info = fold_upload_associations(
+                get_gwas_api(
+                    self._transport, str(trait_id), include_associations=include_associations
                 )
+            )
         else:
             trait_info = trait_api(
                 self._transport, trait_id, include_associations=include_associations
             )
-            if include_coloc_pairs:
-                trait_info["coloc_pairs"] = trait_coloc_pairs_api(
-                    self._transport, trait_id, h4_threshold
-                )
             if include_full_associations:
-                trait_info["full_associations"] = trait_associations_full_api(
-                    self._transport, trait_id
+                trait_info["full_associations"] = mask_padded_associations(
+                    trait_associations_full_api(self._transport, trait_id)
                 )
-            if include_associations:
-                _merge_result_associations(trait_info)
+            trait_info = fold_associations(trait_info)
 
-        if isinstance(trait_info.get("trait"), dict) and trait_info["trait"].get("trait"):
-            trait_info["trait"]["source_url"] = create_source_url(str(trait_info["trait"]["trait"]))
+        trait_info = cleanup_api_object(trait_info)
+        if isinstance(trait_info.get("trait"), dict) and trait_info["trait"].get("pipeline_id"):
+            trait_info["trait"]["source_url"] = create_source_url(
+                str(trait_info["trait"]["pipeline_id"])
+            )
 
-        return _coerce_tabular(cleanup_api_object(trait_info), as_dataframe)
+        # Added after the clean up: the coloc pairs endpoint doesn't return the study
+        # extractions its pairs refer to, so their details can't be joined on.
+        if not is_guid(trait_id) and include_coloc_pairs:
+            coloc_pairs = trait_coloc_pairs_api(self._transport, trait_id, h4_threshold)
+            if coloc_pairs:
+                trait_info["coloc_pairs"] = coloc_pairs
+        return _coerce_tabular(trait_info, as_dataframe)
 
     def traits(
         self,
@@ -208,18 +231,11 @@ class GpmapClient:
 
         result: dict[str, Any]
         if numeric_ids:
-            result = specific_traits_api(
-                self._transport, numeric_ids, include_associations=include_associations
+            result = fold_associations(
+                specific_traits_api(
+                    self._transport, numeric_ids, include_associations=include_associations
+                )
             )
-            if include_associations:
-                _merge_result_associations(result)
-            if include_coloc_pairs:
-                coloc_pairs = [
-                    pair
-                    for tid in numeric_ids
-                    for pair in trait_coloc_pairs_api(self._transport, tid, h4_threshold)
-                ]
-                result["coloc_pairs"] = _dedupe_records(coloc_pairs)
         else:
             result = {
                 "traits": None,
@@ -229,8 +245,21 @@ class GpmapClient:
             }
 
         for guid in guid_ids:
-            _merge_upload_into_traits(result, get_gwas_api(self._transport, guid))
+            upload = get_gwas_api(self._transport, guid, include_associations=include_associations)
+            _merge_trait_result(result, fold_upload_associations(upload))
 
+        result = cleanup_api_object(result)
+        # Added after the clean up, as in trait().
+        if include_coloc_pairs and numeric_ids:
+            coloc_pairs = _dedupe_records(
+                [
+                    pair
+                    for tid in numeric_ids
+                    for pair in trait_coloc_pairs_api(self._transport, tid, h4_threshold)
+                ]
+            )
+            if coloc_pairs:
+                result["coloc_pairs"] = coloc_pairs
         return _coerce_tabular(result, as_dataframe)
 
     def gene(  # noqa: PLR0913
@@ -252,10 +281,8 @@ class GpmapClient:
             include_trans=include_trans,
             h4_threshold=h4_threshold,
         )
-        if include_associations:
-            _merge_result_associations(result)
         result.pop("tissues", None)
-        return _coerce_tabular(cleanup_api_object(result), as_dataframe)
+        return _coerce_tabular(cleanup_api_object(fold_associations(result)), as_dataframe)
 
     def genes(  # noqa: PLR0913
         self,
@@ -275,9 +302,8 @@ class GpmapClient:
             include_trans=include_trans,
             h4_threshold=h4_threshold,
         )
-        if include_associations:
-            _merge_result_associations(result)
-        return _coerce_tabular(result, as_dataframe)
+        result.pop("tissues", None)
+        return _coerce_tabular(cleanup_api_object(fold_associations(result)), as_dataframe)
 
     def region(
         self,
@@ -296,10 +322,8 @@ class GpmapClient:
             include_coloc_pairs=include_coloc_pairs,
             h4_threshold=h4_threshold,
         )
-        if include_associations:
-            _merge_result_associations(result)
         result.pop("tissues", None)
-        return _coerce_tabular(cleanup_api_object(result), as_dataframe)
+        return _coerce_tabular(cleanup_api_object(fold_associations(result)), as_dataframe)
 
     def variant(
         self,
@@ -319,8 +343,7 @@ class GpmapClient:
         )
         if include_summary_stats:
             result["summary_stats"] = variant_summary_stats_api(self._transport, variant_id)
-        _merge_result_associations(result)
-        return _coerce_tabular(cleanup_api_object(result), as_dataframe)
+        return _coerce_tabular(cleanup_api_object(fold_associations(result)), as_dataframe)
 
     def variants(  # noqa: PLR0913
         self,
@@ -344,23 +367,25 @@ class GpmapClient:
             include_coloc_pairs=include_coloc_pairs,
             h4_threshold=h4_threshold,
         )
-        if expand and include_associations:
-            _merge_result_associations(result)
-        return _coerce_tabular(cleanup_api_object(result), as_dataframe)
+        return _coerce_tabular(cleanup_api_object(fold_associations(result)), as_dataframe)
 
     def ld_matrix(self, variant_ids: list[str | int] | None = None) -> dict[str, Any]:
         if not variant_ids:
             raise ValidationError("variant_ids is required")
         if all(isinstance(v, int) for v in variant_ids):
-            return ld_matrix_by_variant_id_api(self._transport, [int(v) for v in variant_ids])
-        return ld_matrix_by_variant_api(self._transport, variant_ids)
+            result = ld_matrix_by_variant_id_api(self._transport, [int(v) for v in variant_ids])
+        else:
+            result = ld_matrix_by_variant_api(self._transport, variant_ids)
+        return _with_rsq(result)
 
     def ld_proxies(self, variant_ids: list[str | int] | None = None) -> dict[str, Any]:
         if not variant_ids:
             raise ValidationError("variant_ids is required")
         if all(isinstance(v, int) for v in variant_ids):
-            return ld_proxies_by_variant_id_api(self._transport, [int(v) for v in variant_ids])
-        return ld_proxies_by_variant_api(self._transport, variant_ids)
+            result = ld_proxies_by_variant_id_api(self._transport, [int(v) for v in variant_ids])
+        else:
+            result = ld_proxies_by_variant_api(self._transport, variant_ids)
+        return _with_rsq(result)
 
     def get_gwas(
         self,
@@ -374,7 +399,7 @@ class GpmapClient:
         result = get_gwas_api(self._transport, gwas_id, include_associations=include_associations)
         if include_summary_stats:
             result["summary_stats"] = get_gwas_summary_stats_api(self._transport, gwas_id)
-        return _coerce_tabular(cleanup_api_object(result), as_dataframe)
+        return _coerce_tabular(cleanup_api_object(fold_upload_associations(result)), as_dataframe)
 
     def upload_gwas(  # noqa: PLR0913
         self,
@@ -383,7 +408,7 @@ class GpmapClient:
         p_value_threshold: float = 5e-8,
         column_names: dict[str, str] | None = None,
         email: str | None = None,
-        category: str = "continuous",
+        variable_type: str = "continuous",
         is_published: bool = False,
         doi: str | None = None,
         should_be_added: bool = False,
@@ -404,13 +429,19 @@ class GpmapClient:
         or_ub_col: str | None = None,
         snp_col: str | None = None,
         rsid_col: str | None = None,
+        category: str | None = None,
     ) -> dict[str, Any]:
         """Upload a GWAS. Name its columns with the ``*_col`` arguments, e.g. ``chr_col="chr"``.
 
         ``chr_col``, ``bp_col``, ``ea_col``, ``oa_col`` and ``p_col`` are required, along
         with either ``beta_col`` and ``se_col`` or ``or_col``, ``or_lb_col`` and
-        ``or_ub_col``. ``column_names`` is deprecated.
+        ``or_ub_col``. ``column_names`` and ``category`` (use ``variable_type``) are deprecated.
         """
+        if category is not None:
+            warnings.warn(
+                "`category` is deprecated, use `variable_type` instead", FutureWarning, stacklevel=2
+            )
+            variable_type = category
         compare_guids = (
             [compare_with_upload_guids]
             if isinstance(compare_with_upload_guids, str)
@@ -421,7 +452,7 @@ class GpmapClient:
             name=name,
             p_value_threshold=p_value_threshold,
             email=email,
-            category=category,
+            variable_type=variable_type,
             ancestry=ancestry,
             sample_size=sample_size,
             reference_build=reference_build,
@@ -453,7 +484,7 @@ class GpmapClient:
             p_value_threshold=p_value_threshold,
             column_names=api_column_names,
             email=str(email),
-            category=category,
+            variable_type=variable_type,
             is_published=is_published,
             doi=doi,
             should_be_added=should_be_added,
@@ -517,7 +548,7 @@ class GpmapClient:
             if alt_name:
                 matched_row["name"] = f"{name} ({alt_name})"
             matched_row["call"] = _search_call(matched_row.get("type"), matched_row.get("type_id"))
-            for column in ("name_lower", "alt_name_lower", "alt_name", "rsq"):
+            for column in ("name_lower", "alt_name_lower", "alt_name"):
                 matched_row.pop(column, None)
             matched_rows.append(matched_row)
         return _dedupe_records(matched_rows)
@@ -525,33 +556,31 @@ class GpmapClient:
 
 def _build_variant_search_rows(payload: dict[str, object]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for item in _ensure_record_list(payload.get("original_variants")):
-        rows.append(
-            {
-                "type": "original_variant",
-                "name": item.get("display_snp"),
-                "type_id": item.get("id"),
-                "num_coloc_groups": item.get("num_colocs"),
-                "num_coloc_studies": _safe_list_len(item.get("coloc_groups")),
-                "num_rare_results": _safe_list_len(item.get("rare_results")),
-                "num_study_extractions": None,
-                "call": f"variant({item.get('id')})",
-            }
-        )
-
-    for item in _ensure_record_list(payload.get("proxy_variants")):
-        rows.append(
-            {
-                "type": "proxy_variant",
-                "name": item.get("display_snp"),
-                "type_id": item.get("id"),
-                "num_coloc_groups": item.get("num_colocs"),
-                "num_coloc_studies": _safe_list_len(item.get("coloc_groups")),
-                "num_rare_results": _safe_list_len(item.get("rare_results")),
-                "num_study_extractions": None,
-                "call": f"variant({item.get('id')})",
-            }
-        )
+    for row_type, key in (
+        ("original_variant", "original_variants"),
+        ("proxy_variant", "proxy_variants"),
+    ):
+        for item in _ensure_record_list(payload.get(key)):
+            # r-squared with the searched variant: the strongest of a proxy's LD pairs
+            ld_proxies = _ensure_record_list(item.get("ld_proxies"))
+            rsq = (
+                _rsq([pair.get("r") for pair in ld_proxies])
+                if row_type == "proxy_variant"
+                else None
+            )
+            rows.append(
+                {
+                    "type": row_type,
+                    "name": item.get("display_snp"),
+                    "type_id": item.get("id"),
+                    "rsq": rsq,
+                    "num_coloc_groups": item.get("num_colocs"),
+                    "num_coloc_studies": _safe_list_len(item.get("coloc_groups")),
+                    "num_rare_results": _safe_list_len(item.get("rare_results")),
+                    "num_study_extractions": None,
+                    "call": f"variant({item.get('id')})",
+                }
+            )
     return _dedupe_records(rows)
 
 
@@ -583,29 +612,39 @@ def _validate_id_list(name: str, ids: list[Any], max_ids: int | None = None) -> 
         raise ValidationError(f"{name} must contain at most {max_ids} IDs")
 
 
-def _merge_result_associations(result: dict[str, Any]) -> None:
-    """Merge ``result["associations"]`` into its non-empty coloc groups and rare results."""
-    associations = _ensure_record_list(result.get("associations"))
-    if not associations:
-        return
-    merged_coloc, merged_rare = merge_associations(
-        _ensure_record_list(result.get("coloc_groups")),
-        _ensure_record_list(result.get("rare_results")),
-        associations,
-    )
-    if result.get("coloc_groups"):
-        result["coloc_groups"] = merged_coloc
-    if result.get("rare_results"):
-        result["rare_results"] = merged_rare
-
-
-def _merge_upload_into_traits(result: dict[str, Any], upload: dict[str, Any]) -> None:
+def _merge_trait_result(result: dict[str, Any], upload: dict[str, Any]) -> None:
+    """Add a GWAS upload result to a traits() result."""
     if isinstance(upload.get("trait"), dict):
-        result["traits"] = [*_ensure_record_list(result.get("traits")), dict(upload["trait"])]
+        # One row per upload, from its single-value fields, named like the other traits.
+        row = {
+            key: value
+            for key, value in upload["trait"].items()
+            if not isinstance(value, (dict, list))
+        }
+        if "name" in row:
+            row["trait_name"] = row["name"]
+        result["traits"] = [*_ensure_record_list(result.get("traits")), row]
     for key in ("coloc_groups", "study_extractions", "rare_results"):
         rows = _ensure_record_list(upload.get(key))
-        if rows:
-            result[key] = [*_ensure_record_list(result.get(key)), *rows]
+        if not rows:
+            continue
+        existing = _ensure_record_list(result.get(key))
+        if existing and not any("source" in row for row in existing):
+            existing = [{**row, "source": "existing"} for row in existing]
+        result[key] = [*existing, *rows]
+
+
+def _with_rsq(result: dict[str, Any]) -> dict[str, Any]:
+    """LD pairs with their r-squared, rounded as in search_gpmap(); no pairs give an empty list."""
+    result["lds"] = [
+        {**pair, "rsq": _rsq([pair.get("r")])} for pair in _ensure_record_list(result.get("lds"))
+    ]
+    return result
+
+
+def _rsq(r_values: list[Any]) -> float | None:
+    squares = [float(r) ** 2 for r in r_values if isinstance(r, (int, float))]
+    return round(max(squares), 2) if squares else None
 
 
 def _safe_list_len(value: Any) -> int:

@@ -1,5 +1,5 @@
 {
-  "id": "search_trait_text",
+  "id": "search_trait_text_ties",
   "function": "search_gpmap",
   "requests": [
     {

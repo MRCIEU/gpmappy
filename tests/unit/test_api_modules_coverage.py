@@ -131,7 +131,7 @@ def test_api_endpoints_cover_request_shapes() -> None:
             p_value_threshold=1e-8,
             column_names={"p": "p"},
             email="a@b.com",
-            category="continuous",
+            variable_type="continuous",
             is_published=False,
             doi=None,
             should_be_added=False,

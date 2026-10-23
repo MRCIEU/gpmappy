@@ -36,12 +36,14 @@ from _parity import (
     load_golden,
     load_surface,
     normalize,
-    resolve_args,
+    resolve_fixture_paths,
 )
 
 import gpmappy
 from gpmappy import GpmapClient, get_default_client, set_default_client
+from gpmappy.constants import API_TO_PACKAGE_VERSION
 from gpmappy.exceptions import GpmappyError
+from gpmappy.version import package_version
 
 REPO_ROOT = CONTRACT_DIR.parent.parent
 SURFACE = load_surface()
@@ -75,6 +77,16 @@ def test_python_only_exports_are_documented() -> None:
         name for name in PYTHON_ONLY_EXPORTS if name in R_EXPORTS or name not in gpmappy.__all__
     )
     assert not stale, f"Remove these from PYTHON_ONLY_EXPORTS: {stale}"
+
+
+def test_supports_the_same_api_versions_as_gpmapr() -> None:
+    supported = sorted(
+        api for api, versions in API_TO_PACKAGE_VERSION.items() if package_version() in versions
+    )
+    assert supported == SURFACE["api_versions"], (
+        f"gpmappy {package_version()} supports API {supported}, gpmapr {SURFACE['version']} "
+        f"supports {SURFACE['api_versions']}: update API_TO_PACKAGE_VERSION"
+    )
 
 
 def _python_params(function: Any) -> list[inspect.Parameter]:
@@ -120,15 +132,26 @@ def test_signature_matches_gpmapr(name: str, target: str) -> None:
 # ---------------------------------------------------------------------------
 # Scenario outputs
 # ---------------------------------------------------------------------------
-def _run_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
-    client = GpmapClient()
-    transport = FixtureTransport()
-    client._transport = transport  # type: ignore[assignment]
-
-    function = getattr(gpmappy, scenario["function"])
-    kwargs = resolve_args(scenario["args"])
+def _call(function_name: str, args: dict[str, Any]) -> Any:
+    """Call an exported function as a scenario describes, with list-of-dict tables."""
+    function = getattr(gpmappy, function_name)
+    kwargs = {key: _resolve(value) for key, value in args.items()}
     if "as_dataframe" in inspect.signature(function).parameters:
         kwargs["as_dataframe"] = False
+    return function(**kwargs)
+
+
+def _resolve(value: Any) -> Any:
+    """A scenario argument: {"$call": {...}} is replaced by the result of that call."""
+    if isinstance(value, dict) and "$call" in value:
+        return _call(value["$call"]["function"], value["$call"]["args"])
+    return resolve_fixture_paths(value)
+
+
+def _run_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
+    client = GpmapClient()
+    transport = FixtureTransport(scenario.get("fixtures", "gpmapr"))
+    client._transport = transport  # type: ignore[assignment]
 
     outcome: dict[str, Any] = {}
     original = get_default_client()
@@ -137,7 +160,7 @@ def _run_scenario(scenario: dict[str, Any]) -> dict[str, Any]:
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
             try:
-                outcome["result"] = normalize(function(**kwargs))
+                outcome["result"] = normalize(_call(scenario["function"], scenario["args"]))
             except GpmappyError as exc:
                 outcome["error"] = str(exc)
     finally:
@@ -206,12 +229,13 @@ def test_gpmapr_snapshot_is_current(tmp_path: Path) -> None:
         capture_output=True,
         timeout=300,
     )
-    comparison = filecmp.dircmp(GPMAPR_DIR, tmp_path)
-    changed = comparison.diff_files + comparison.left_only + comparison.right_only
-    golden = filecmp.dircmp(GPMAPR_DIR / "golden", tmp_path / "golden")
-    changed += [
-        f"golden/{name}" for name in golden.diff_files + golden.left_only + golden.right_only
-    ]
+    changed = []
+    for subdir in ("", "golden", "fixtures"):
+        comparison = filecmp.dircmp(GPMAPR_DIR / subdir, tmp_path / subdir)
+        differing = comparison.diff_files + comparison.left_only + comparison.right_only
+        changed += [
+            str(Path(subdir) / name) for name in differing if name not in ("golden", "fixtures")
+        ]
     assert not changed, (
         f"gpmapr has changed since the contract was recorded ({changed}). Run "
         "`Rscript scripts/parity/generate_gpmapr_contract.R`, review the diff and port the changes."

@@ -17,7 +17,6 @@
       "match_rules",
       "proxy_group_id",
       "proxy_group_name",
-      "proxy_rules",
       "trait_id",
       "trait_name"
     ],
@@ -44,15 +43,6 @@
         "trait_name": "Appendicular lean mass",
         "duplicate_group": 2,
         "is_representative": true
-      },
-      {
-        "trait_id": 3464,
-        "trait_name": "Sitting height",
-        "duplicate_group": 3,
-        "is_representative": true,
-        "proxy_group_id": 50,
-        "proxy_group_name": "Height",
-        "proxy_rules": "concept_map"
       }
     ]
   }

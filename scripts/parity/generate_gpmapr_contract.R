@@ -1,16 +1,22 @@
 # Generate the gpmapr side of the gpmappy parity contract.
 #
 # Loads the gpmapr R sources (without running .onLoad, so no network access), mocks
-# httr::GET/POST/DELETE so every request is served from tests/contract/fixtures, runs
-# each scenario in tests/contract/scenarios.json and writes:
+# httr::GET/POST/DELETE so every request is served from fixtures, runs each scenario
+# in tests/contract/scenarios.json and writes:
 #
-#   tests/contract/gpmapr/surface.json        exported functions and their formals
-#   tests/contract/gpmapr/golden/<id>.json    requests made + normalized result/error
+#   <output_dir>/surface.json        exported functions, their formals and supported API versions
+#   <output_dir>/fixtures/           a copy of gpmapr's recorded API fixtures (tests/testthat/fixtures)
+#   <output_dir>/golden/<id>.json    requests made + normalized result/error/warnings
+#
+# Scenarios run against one of two fixture sets:
+#   "gpmapr"  gpmapr's own recorded responses, served by the URLs in their index.json
+#   "edge"    gpmappy's hand-built edge cases, served by tests/contract/fixtures/routes.json
 #
 # Usage (from anywhere):
 #   Rscript scripts/parity/generate_gpmapr_contract.R [path/to/gpmapr] [output_dir]
 #
-# The gpmapr path defaults to $GPMAPR_PATH, then ../gpmapr next to this repository.
+# The gpmapr path defaults to $GPMAPR_PATH, then ../gpmapr next to this repository, and
+# the output directory to tests/contract/gpmapr.
 
 suppressPackageStartupMessages({
   library(jsonlite)
@@ -19,27 +25,26 @@ suppressPackageStartupMessages({
 })
 
 script_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
-repo_root <- normalizePath(file.path(dirname(sub("^--file=", "", script_arg[[1]])), "..", ".."))
+script_dir <- dirname(normalizePath(sub("^--file=", "", script_arg[[1]])))
+repo_root <- normalizePath(file.path(script_dir, "..", ".."))
 contract_dir <- file.path(repo_root, "tests", "contract")
-fixtures_dir <- file.path(contract_dir, "fixtures")
+edge_dir <- file.path(contract_dir, "fixtures")
+source(file.path(script_dir, "normalize.R"))
 
 args <- commandArgs(trailingOnly = TRUE)
 gpmapr_path <- if (length(args) >= 1) args[[1]] else Sys.getenv("GPMAPR_PATH", file.path(dirname(repo_root), "gpmapr"))
 out_dir <- if (length(args) >= 2) args[[2]] else file.path(contract_dir, "gpmapr")
 gpmapr_path <- normalizePath(gpmapr_path, mustWork = TRUE)
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 base_url <- "https://gpmap.fixture.test/api"
 
-# ---------------------------------------------------------------------------
-# Load gpmapr sources
-# ---------------------------------------------------------------------------
-gp <- new.env(parent = globalenv())
-for (file in sort(list.files(file.path(gpmapr_path, "R"), pattern = "\\.[rR]$", full.names = TRUE))) {
-  sys.source(file, envir = gp, keep.source = FALSE)
-}
+gp <- load_gpmapr(gpmapr_path)
+# The API version gate is tested on its own in each package; here every request is a fixture.
+gp$ensure_api_compatible <- function() invisible(TRUE)
 namespace_lines <- readLines(file.path(gpmapr_path, "NAMESPACE"))
 exports <- sort(sub("^export\\((.*)\\)$", "\\1", grep("^export\\(", namespace_lines, value = TRUE)))
-description <- read.dcf(file.path(gpmapr_path, "DESCRIPTION"))
+package_version <- gpmapr_version(gpmapr_path)
 
 # ---------------------------------------------------------------------------
 # Exported surface
@@ -68,18 +73,25 @@ describe_function <- function(name) {
   return(list(name = name, params = params))
 }
 
+supported_api_versions <- names(Filter(function(versions) package_version %in% versions, gp$api_to_package_version))
+
 surface <- list(
   package = "gpmapr",
-  version = unname(description[1, "Version"]),
+  version = package_version,
+  api_versions = as.list(sort(supported_api_versions)),
   exports = lapply(exports, describe_function)
 )
 
 # ---------------------------------------------------------------------------
-# HTTP mocking against the fixture routes
+# Fixture sets
 # ---------------------------------------------------------------------------
-routes <- fromJSON(file.path(fixtures_dir, "routes.json"), simplifyVector = FALSE)
-recorded <- new.env()
-recorded$requests <- list()
+gpmapr_fixtures_dir <- file.path(out_dir, "fixtures")
+unlink(gpmapr_fixtures_dir, recursive = TRUE)
+dir.create(gpmapr_fixtures_dir)
+invisible(file.copy(
+  list.files(file.path(gpmapr_path, "tests", "testthat", "fixtures"), pattern = "\\.json$", full.names = TRUE),
+  gpmapr_fixtures_dir
+))
 
 normalize_query_value <- function(value) {
   lowered <- tolower(value)
@@ -91,9 +103,9 @@ normalize_query_value <- function(value) {
   return(value)
 }
 
-parse_request_url <- function(url) {
-  stopifnot(startsWith(url, base_url))
-  parts <- strsplit(sub(base_url, "", url, fixed = TRUE), "?", fixed = TRUE)[[1]]
+# A URL relative to the API root, e.g. "/v1/traits?ids=1&ids=2", as a path and a normalized query.
+parse_relative_url <- function(relative_url) {
+  parts <- strsplit(relative_url, "?", fixed = TRUE)[[1]]
   query <- list()
   if (length(parts) > 1 && nzchar(parts[[2]])) {
     for (pair in strsplit(parts[[2]], "&", fixed = TRUE)[[1]]) {
@@ -107,8 +119,29 @@ parse_request_url <- function(url) {
   return(list(path = URLdecode(parts[[1]]), query = query))
 }
 
+load_routes <- function() {
+  edge <- lapply(fromJSON(file.path(edge_dir, "routes.json"), simplifyVector = FALSE), function(route) {
+    route$query <- if (is.null(route$query)) list() else lapply(route$query, function(v) as.character(unlist(v)))
+    route$file <- file.path(edge_dir, "responses", route$response)
+    return(route)
+  })
+  index <- fromJSON(file.path(gpmapr_fixtures_dir, "index.json"), simplifyVector = FALSE)
+  recorded <- lapply(names(index), function(relative_url) {
+    parsed <- parse_relative_url(relative_url)
+    return(list(method = "GET", path = parsed$path, query = parsed$query, file = file.path(gpmapr_fixtures_dir, index[[relative_url]])))
+  })
+  return(list(edge = edge, gpmapr = recorded))
+}
+routes <- load_routes()
+
+# ---------------------------------------------------------------------------
+# HTTP mocking against the fixture routes
+# ---------------------------------------------------------------------------
+state <- new.env()
+state$requests <- list()
+state$routes <- NULL
+
 route_query_matches <- function(route_query, query) {
-  route_query <- if (is.null(route_query)) list() else lapply(route_query, unlist)
   if (!setequal(names(route_query), names(query))) return(FALSE)
   for (key in names(route_query)) {
     if (!identical(as.character(route_query[[key]]), as.character(query[[key]]))) return(FALSE)
@@ -125,14 +158,15 @@ fake_response <- function(url, status, text) {
 }
 
 serve <- function(method, url, body = NULL) {
-  request <- parse_request_url(url)
+  stopifnot(startsWith(url, base_url))
+  request <- parse_relative_url(sub(base_url, "", url, fixed = TRUE))
   entry <- list(method = method, path = request$path, query = request$query)
   if (!is.null(body)) entry$body <- body
-  recorded$requests[[length(recorded$requests) + 1L]] <- entry
+  state$requests[[length(state$requests) + 1L]] <- entry
 
-  for (route in routes) {
+  for (route in state$routes) {
     if (route$method == method && route$path == request$path && route_query_matches(route$query, request$query)) {
-      text <- paste(readLines(file.path(fixtures_dir, "responses", route$response), warn = FALSE), collapse = "\n")
+      text <- paste(readLines(route$file, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
       status <- if (is.null(route$status)) 200L else route$status
       return(fake_response(url, status, text))
     }
@@ -153,81 +187,24 @@ fake_post <- function(url, body = NULL, ...) {
 fake_delete <- function(url, body = NULL, ...) serve("DELETE", url, body)
 
 # ---------------------------------------------------------------------------
-# Normalization shared with tests/contract/_parity.py
-# ---------------------------------------------------------------------------
-is_missing <- function(value) is.null(value) || (is.atomic(value) && length(value) == 1 && is.na(value))
-
-drop_missing <- function(fields) fields[!vapply(fields, is_missing, logical(1))]
-
-scalar <- function(value) {
-  if (is.factor(value)) value <- as.character(value)
-  if (is.na(value)) return(NA)
-  return(value)
-}
-
-as_table <- function(rows) {
-  rows <- lapply(rows, drop_missing)
-  columns <- sort(unique(unlist(lapply(rows, names))))
-  return(list(kind = "table", columns = as.list(columns), rows = rows))
-}
-
-normalize_cell <- function(column, i) {
-  if (is.data.frame(column)) {
-    nested <- lapply(names(column), function(name) normalize_cell(column[[name]], i))
-    names(nested) <- names(column)
-    nested <- drop_missing(nested)
-    if (length(nested) == 0) return(NULL)
-    return(list(kind = "object", fields = nested))
-  }
-  value <- column[[i]]
-  if (is.list(column)) {
-    # list-columns wrap scalars in a length-one list, e.g. after t() + as.data.frame()
-    if (is.list(value) && length(value) == 1 && is.null(names(value)) && is.atomic(value[[1]])) value <- value[[1]]
-    return(normalize(value))
-  }
-  return(scalar(value))
-}
-
-normalize <- function(value) {
-  if (is.null(value)) return(NULL)
-  if (is.data.frame(value)) {
-    if (nrow(value) == 0) return(list(kind = "list", items = list()))
-    rows <- lapply(seq_len(nrow(value)), function(i) {
-      row <- lapply(names(value), function(name) normalize_cell(value[[name]], i))
-      names(row) <- names(value)
-      return(row)
-    })
-    return(as_table(rows))
-  }
-  if (is.list(value)) {
-    if (length(value) == 0) return(list(kind = "list", items = list()))
-    if (!is.null(names(value)) && all(nzchar(names(value)))) {
-      fields <- drop_missing(lapply(value, normalize))
-      if (length(fields) == 0) return(NULL)
-      return(list(kind = "object", fields = fields))
-    }
-    items <- lapply(value, normalize)
-    is_record <- vapply(items, function(item) is.list(item) && identical(item$kind, "object"), logical(1))
-    if (all(is_record)) return(as_table(lapply(items, function(item) item$fields)))
-    return(list(kind = "list", items = items))
-  }
-  if (length(value) == 0) return(list(kind = "list", items = list()))
-  if (length(value) == 1) return(scalar(value))
-  return(list(kind = "list", items = lapply(seq_along(value), function(i) scalar(value[[i]]))))
-}
-
-# ---------------------------------------------------------------------------
 # Scenarios
 # ---------------------------------------------------------------------------
+# Scenario arguments: "{fixtures}" in strings is the edge fixtures directory, and
+# {"$call": {"function": ..., "args": ...}} is replaced by the result of that call.
 resolve_args <- function(args) {
   lapply(args, function(arg) {
-    if (is.character(arg)) arg <- gsub("{fixtures}", fixtures_dir, arg, fixed = TRUE)
+    if (is.list(arg) && !is.null(arg[["$call"]])) {
+      inner <- arg[["$call"]]
+      return(do.call(gp[[inner$`function`]], resolve_args(inner$args)))
+    }
+    if (is.character(arg)) arg <- gsub("{fixtures}", edge_dir, arg, fixed = TRUE)
     return(arg)
   })
 }
 
 run_scenario <- function(scenario) {
-  recorded$requests <- list()
+  state$requests <- list()
+  state$routes <- routes[[if (is.null(scenario$fixtures)) "gpmapr" else scenario$fixtures]]
   if (exists("search_results", envir = gp$.search_cache)) rm("search_results", envir = gp$.search_cache)
   warnings <- character()
   outcome <- list()
@@ -247,17 +224,11 @@ run_scenario <- function(scenario) {
       outcome$error <<- conditionMessage(e)
     }
   )
-  # files are written relative to the fixtures dir so goldens do not depend on the checkout path
-  requests <- lapply(recorded$requests, function(request) {
+  requests <- lapply(state$requests, function(request) {
     if (length(request$query) == 0) request$query <- structure(list(), names = character())
     return(request)
   })
   return(c(list(id = scenario$id, `function` = scenario$`function`, requests = requests, warnings = as.list(warnings)), outcome))
-}
-
-write_json_file <- function(value, path) {
-  json <- toJSON(value, auto_unbox = TRUE, null = "null", na = "null", digits = NA, pretty = TRUE)
-  writeLines(json, path)
 }
 
 main <- function() {

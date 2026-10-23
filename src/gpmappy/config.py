@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from gpmappy.constants import (
@@ -15,6 +15,7 @@ from gpmappy.constants import (
     DEV_BASE_URL,
     PRODUCTION_BASE_URL,
 )
+from gpmappy.version import package_version
 
 
 class ApiEnvironment(str, Enum):
@@ -32,7 +33,9 @@ class GpmapConfig:
     rate_limit_max_retries: int = DEFAULT_RATE_LIMIT_MAX_RETRIES
     rate_limit_base_delay: float = DEFAULT_RATE_LIMIT_BASE_DELAY_SECONDS
     rate_limit_max_delay: float = DEFAULT_RATE_LIMIT_MAX_DELAY_SECONDS
-    user_agent: str = "gpmappy/0.2.0"
+    user_agent: str = field(default_factory=lambda: f"gpmappy/{package_version()}")
+    # Check once per API URL that this gpmappy version supports the API's version.
+    check_api_version: bool = True
 
     @staticmethod
     def from_environment(api: str) -> GpmapConfig:

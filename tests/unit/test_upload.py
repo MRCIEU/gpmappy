@@ -93,7 +93,7 @@ def test_upload_rejects_invalid_compare_guids(upload: Any) -> None:
     [
         ({"name": ""}, "name is required"),
         ({"email": None}, "email is required"),
-        ({"category": "binary"}, "category"),
+        ({"variable_type": "binary"}, "variable_type"),
         ({"ancestry": "AFR"}, "ancestry"),
         ({"reference_build": "hg19"}, "reference_build"),
         ({"p_value_threshold": 0.05}, "p_value_threshold"),
@@ -169,3 +169,15 @@ def test_delete_gwas_surfaces_api_errors(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(client._transport, "request_json", plain_error)
     with pytest.raises(ApiError, match="still processing"):
         client.delete_gwas(GUID, "user@example.com")
+
+
+def test_upload_sends_the_variable_type_and_accepts_the_deprecated_category(upload: Any) -> None:
+    columns = {**COLUMNS, "p_col": "p", "beta_col": "beta", "se_col": "se"}
+    sent = upload(**columns, variable_type="categorical")
+    assert sent["variable_type"] == "categorical"
+    assert "category" not in sent
+    with pytest.warns(FutureWarning, match="`category` is deprecated"):
+        sent = upload(**columns, category="categorical")
+    assert sent["variable_type"] == "categorical"
+    with pytest.raises(ValidationError, match="variable_type must be"):
+        upload(**columns, variable_type="binary")

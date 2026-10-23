@@ -1,67 +1,744 @@
 {
-  "_comment": "Each scenario calls one exported function in both gpmapr and gpmappy against the fixture routes. Golden results are produced from gpmapr by scripts/parity/generate_gpmapr_contract.R. 'divergences' lists result paths (fnmatch patterns) where gpmappy intentionally differs; each one must still differ, so stale entries fail.",
-  "scenarios": [
-    {"id": "health_api", "function": "health_api", "args": {}},
-    {"id": "all_traits", "function": "all_traits", "args": {}},
-    {"id": "all_genes", "function": "all_genes", "args": {}},
-    {"id": "trait_duplicates", "function": "trait_duplicates", "args": {}},
-    {"id": "get_all_gene_pleiotropies", "function": "get_all_gene_pleiotropies", "args": {}},
-    {"id": "get_all_variant_pleiotropies", "function": "get_all_variant_pleiotropies", "args": {}},
-    {"id": "trait_basic", "function": "trait", "args": {"trait_id": 5020}},
-    {"id": "trait_everything", "function": "trait", "args": {"trait_id": 5020, "include_associations": true, "include_full_associations": true, "include_coloc_pairs": true}},
-    {"id": "trait_upload_guid", "function": "trait", "args": {"trait_id": "3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b", "include_associations": true}},
-    {"id": "traits_with_coloc_pairs", "function": "traits", "args": {"trait_ids": [4405, 4872], "include_associations": true, "include_coloc_pairs": true}},
-    {"id": "traits_upload_guid_only", "function": "traits", "args": {"trait_ids": ["3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b"]}},
-    {"id": "gene_with_associations", "function": "gene", "args": {"gene_id": "WNT7B", "include_associations": true}},
-    {"id": "genes_with_associations", "function": "genes", "args": {"gene_ids": ["WNT7B", "WNT7A"], "include_associations": true}},
-    {"id": "variant_basic", "function": "variant", "args": {"variant_id": 5553693}},
-    {"id": "variants_expanded", "function": "variants", "args": {"variants": [5553693, 5553694], "expand": true, "include_associations": true}},
-    {"id": "variants_minimal", "function": "variants", "args": {"variants": ["rs1260326", "rs780094", "rs1260326"]}},
-    {"id": "region_with_associations", "function": "region", "args": {"region_id": 1354, "include_associations": true}},
-    {
-      "id": "region_without_association_payload",
-      "function": "region",
-      "args": {"region_id": 1355, "include_associations": true},
-      "divergences": [
-        {"path": "error", "reason": "gpmapr's merge_associations() calls return() with two values when the API sends no associations, which errors; gpmappy returns the region unchanged."}
-      ]
+ "_comment": "Each scenario calls one exported function in both gpmapr and gpmappy, against gpmapr's recorded API responses (fixtures \"gpmapr\", the default) or gpmappy's hand-built edge cases (fixtures \"edge\"). Golden results come from gpmapr via scripts/parity/generate_gpmapr_contract.R. {\"$call\": ...} arguments are replaced by the result of that call. 'divergences' lists result paths (fnmatch patterns) where gpmappy intentionally differs; each must still differ, so stale entries fail.",
+ "scenarios": [
+  {
+   "id": "health_api",
+   "function": "health_api",
+   "args": {}
+  },
+  {
+   "id": "gpmap_available",
+   "function": "gpmap_available",
+   "args": {}
+  },
+  {
+   "id": "all_traits",
+   "function": "all_traits",
+   "args": {}
+  },
+  {
+   "id": "all_genes",
+   "function": "all_genes",
+   "args": {}
+  },
+  {
+   "id": "trait_duplicates",
+   "function": "trait_duplicates",
+   "args": {}
+  },
+  {
+   "id": "get_all_gene_pleiotropies",
+   "function": "get_all_gene_pleiotropies",
+   "args": {}
+  },
+  {
+   "id": "get_all_variant_pleiotropies",
+   "function": "get_all_variant_pleiotropies",
+   "args": {}
+  },
+  {
+   "id": "trait_basic",
+   "function": "trait",
+   "args": {
+    "trait_id": 5020
+   }
+  },
+  {
+   "id": "trait_with_associations",
+   "function": "trait",
+   "args": {
+    "trait_id": 5020,
+    "include_associations": true
+   }
+  },
+  {
+   "id": "trait_full_associations",
+   "function": "trait",
+   "args": {
+    "trait_id": 5020,
+    "include_full_associations": true
+   }
+  },
+  {
+   "id": "traits_with_associations",
+   "function": "traits",
+   "args": {
+    "trait_ids": [
+     4405,
+     4872
+    ],
+    "include_associations": true
+   }
+  },
+  {
+   "id": "traits_with_upload",
+   "function": "traits",
+   "args": {
+    "trait_ids": [
+     4405,
+     4872,
+     "7a289615-c1b4-91f3-3d97-887f60de9155"
+    ],
+    "include_associations": true
+   }
+  },
+  {
+   "id": "traits_upload_only",
+   "function": "traits",
+   "args": {
+    "trait_ids": [
+     "7a289615-c1b4-91f3-3d97-887f60de9155"
+    ]
+   }
+  },
+  {
+   "id": "gene_basic",
+   "function": "gene",
+   "args": {
+    "gene_id": "WNT7B"
+   }
+  },
+  {
+   "id": "genes_with_associations",
+   "function": "genes",
+   "args": {
+    "gene_ids": [
+     "WNT7B",
+     "WNT7A"
+    ],
+    "include_associations": true
+   }
+  },
+  {
+   "id": "variant_basic",
+   "function": "variant",
+   "args": {
+    "variant_id": 5553693
+   }
+  },
+  {
+   "id": "variants_expanded",
+   "function": "variants",
+   "args": {
+    "variants": [
+     5553693,
+     5553694
+    ],
+    "expand": true,
+    "include_associations": true
+   }
+  },
+  {
+   "id": "region_basic",
+   "function": "region",
+   "args": {
+    "region_id": 459
+   }
+  },
+  {
+   "id": "region_with_associations",
+   "function": "region",
+   "args": {
+    "region_id": 459,
+    "include_associations": true
+   }
+  },
+  {
+   "id": "associations",
+   "function": "associations",
+   "args": {
+    "variant_ids": [
+     80717
+    ],
+    "study_ids": [
+     926,
+     927
+    ]
+   }
+  },
+  {
+   "id": "ld_proxies",
+   "function": "ld_proxies",
+   "args": {
+    "variant_ids": [
+     5553693,
+     5553694
+    ]
+   }
+  },
+  {
+   "id": "ld_matrix",
+   "function": "ld_matrix",
+   "args": {
+    "variant_ids": [
+     5553693,
+     5553688
+    ]
+   }
+  },
+  {
+   "id": "get_gwas_upload",
+   "function": "get_gwas",
+   "args": {
+    "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155"
+   }
+  },
+  {
+   "id": "get_gwas_upload_with_associations",
+   "function": "get_gwas",
+   "args": {
+    "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+    "include_associations": true
+   }
+  },
+  {
+   "id": "trait_upload_guid",
+   "function": "trait",
+   "args": {
+    "trait_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+    "include_associations": true
+   }
+  },
+  {
+   "id": "compare_upload_with_trait",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
     },
-    {"id": "associations", "function": "associations", "args": {"variant_ids": [5553677, 5553693], "study_ids": [15980, 5115]}},
-    {"id": "ld_matrix_by_variant_id", "function": "ld_matrix", "args": {"variant_ids": [5553693, 5553694]}},
-    {"id": "ld_matrix_by_rsid", "function": "ld_matrix", "args": {"variant_ids": ["rs28971325", "rs9330813"]}},
-    {"id": "ld_proxies_by_variant_id", "function": "ld_proxies", "args": {"variant_ids": [5553693]}},
-    {"id": "ld_proxies_by_rsid", "function": "ld_proxies", "args": {"variant_ids": ["rs28971325"]}},
-    {"id": "get_gwas_with_associations", "function": "get_gwas", "args": {"gwas_id": "3f2b8c1e-5a4d-4e6f-9b7a-1c2d3e4f5a6b", "include_associations": true}},
-    {"id": "search_trait_text", "function": "search_gpmap", "args": {"search_text": "Haemoglobin"}},
-    {"id": "search_no_match", "function": "search_gpmap", "args": {"search_text": "no-such-trait-anywhere"}},
-    {
-      "id": "search_variant",
-      "function": "search_gpmap",
-      "args": {"search_text": "rs28971325"},
-      "divergences": [
-        {"path": "requests", "reason": "gpmapr downloads /v1/search/options even for variant searches; gpmappy only fetches it for text searches."},
-        {"path": "result/rows/1/num_coloc_studies", "reason": "gpmapr counts coloc_groups[[1]] (the first proxy) for every proxy row; gpmappy counts each proxy's own coloc groups."}
-      ]
+    "trait_id": 2527
+   }
+  },
+  {
+   "id": "compare_upload_with_compared_upload",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
     },
-    {
-      "id": "upload_gwas_column_args",
-      "function": "upload_gwas",
-      "args": {"file": "{fixtures}/files/gwas.tsv", "name": "My uploaded GWAS", "email": "user@example.com", "sample_size": 1000, "compare_with_upload_guids": ["11111111-2222-3333-4444-555555555555"], "chr_col": "chr", "bp_col": "pos", "ea_col": "ea", "oa_col": "oa", "p_col": "p", "eaf_col": "eaf", "beta_col": "beta", "se_col": "se"}
+    "trait_id": "11111111-2222-3333-4444-555555555555"
+   }
+  },
+  {
+   "id": "compare_upload_placeholder_association",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
     },
-    {
-      "id": "upload_gwas_legacy_column_names",
-      "function": "upload_gwas",
-      "args": {"file": "{fixtures}/files/gwas.tsv", "name": "My uploaded GWAS", "email": "user@example.com", "sample_size": 1000, "column_names": {"chr": "chr", "BP": "pos", "EA": "ea", "OA": "oa", "P": "p", "BETA": "beta", "SE": "se"}}
+    "trait_id": 21
+   }
+  },
+  {
+   "id": "compare_upload_no_shared_groups",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
     },
-    {"id": "upload_gwas_missing_p_col", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "chr_col": "chr", "bp_col": "pos", "ea_col": "ea", "oa_col": "oa", "beta_col": "beta", "se_col": "se"}},
-    {"id": "upload_gwas_beta_without_se", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "chr_col": "chr", "bp_col": "pos", "ea_col": "ea", "oa_col": "oa", "p_col": "p", "beta_col": "beta"}},
-    {"id": "upload_gwas_column_not_in_file", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "chr_col": "chr", "bp_col": "pos", "ea_col": "ea", "oa_col": "oa", "p_col": "pval", "beta_col": "beta", "se_col": "se"}},
-    {"id": "upload_gwas_both_column_styles", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "column_names": {"CHR": "chr"}, "chr_col": "chr"}},
-    {"id": "upload_gwas_unknown_legacy_column", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "column_names": {"CHR": "chr", "POS": "pos"}}},
-    {"id": "upload_gwas_bad_compare_guids", "function": "upload_gwas", "args": {"file": "{fixtures}/files/gwas.tsv", "name": "test", "email": "user@example.com", "sample_size": 1000, "compare_with_upload_guids": ["not-a-guid"], "chr_col": "chr", "bp_col": "pos", "ea_col": "ea", "oa_col": "oa", "p_col": "p", "beta_col": "beta", "se_col": "se"}},
-    {"id": "delete_gwas", "function": "delete_gwas", "args": {"gwas_id": "0f0e0d0c-0b0a-4908-8706-050403020100", "email": "user@example.com"}},
-    {"id": "delete_gwas_not_found", "function": "delete_gwas", "args": {"gwas_id": "00000000-0000-0000-0000-000000000000", "email": "user@example.com"}},
-    {"id": "delete_gwas_bad_guid", "function": "delete_gwas", "args": {"gwas_id": "not-a-guid", "email": "user@example.com"}},
-    {"id": "delete_gwas_blank_email", "function": "delete_gwas", "args": {"gwas_id": "0f0e0d0c-0b0a-4908-8706-050403020100", "email": ""}}
-  ]
+    "trait_id": 999999
+   }
+  },
+  {
+   "id": "compare_upload_without_associations",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155"
+      }
+     }
+    },
+    "trait_id": 2527
+   }
+  },
+  {
+   "id": "compare_upload_two_trait_ids",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
+    },
+    "trait_id": [
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "id": "compare_upload_unknown_upload",
+   "function": "compare_upload",
+   "args": {
+    "upload": {
+     "$call": {
+      "function": "get_gwas",
+      "args": {
+       "gwas_id": "7a289615-c1b4-91f3-3d97-887f60de9155",
+       "include_associations": true
+      }
+     }
+    },
+    "trait_id": "99999999-2222-3333-4444-555555555555"
+   }
+  },
+  {
+   "id": "search_variant",
+   "function": "search_gpmap",
+   "args": {
+    "search_text": "rs9939609"
+   }
+  },
+  {
+   "id": "search_text",
+   "function": "search_gpmap",
+   "args": {
+    "search_text": "haemoglobin"
+   }
+  },
+  {
+   "id": "trait_everything",
+   "function": "trait",
+   "args": {
+    "trait_id": 5020,
+    "include_associations": true,
+    "include_full_associations": true,
+    "include_coloc_pairs": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "trait_not_found",
+   "function": "trait",
+   "args": {
+    "trait_id": 999999999
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "traits_with_coloc_pairs",
+   "function": "traits",
+   "args": {
+    "trait_ids": [
+     4405,
+     4872
+    ],
+    "include_associations": true,
+    "include_coloc_pairs": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "gene_with_associations",
+   "function": "gene",
+   "args": {
+    "gene_id": "WNT7B",
+    "include_associations": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "genes_with_matching_associations",
+   "function": "genes",
+   "args": {
+    "gene_ids": [
+     "WNT7B",
+     "WNT7A"
+    ],
+    "include_associations": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "variant_with_nested_associations",
+   "function": "variant",
+   "args": {
+    "variant_id": 5553693
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "variants_expanded_with_matching_associations",
+   "function": "variants",
+   "args": {
+    "variants": [
+     5553693,
+     5553694
+    ],
+    "expand": true,
+    "include_associations": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "variants_minimal",
+   "function": "variants",
+   "args": {
+    "variants": [
+     "rs1260326",
+     "rs780094",
+     "rs1260326"
+    ]
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "region_with_placeholder_association",
+   "function": "region",
+   "args": {
+    "region_id": 1354,
+    "include_associations": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "region_without_association_payload",
+   "function": "region",
+   "args": {
+    "region_id": 1355,
+    "include_associations": true
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "associations_matching",
+   "function": "associations",
+   "args": {
+    "variant_ids": [
+     5553677,
+     5553693
+    ],
+    "study_ids": [
+     15980,
+     5115
+    ]
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "ld_matrix_by_rsid",
+   "function": "ld_matrix",
+   "args": {
+    "variant_ids": [
+     "rs28971325",
+     "rs9330813"
+    ]
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "ld_matrix_without_pairs",
+   "function": "ld_matrix",
+   "args": {
+    "variant_ids": [
+     5553693,
+     80717
+    ]
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "ld_proxies_by_rsid",
+   "function": "ld_proxies",
+   "args": {
+    "variant_ids": [
+     "rs28971325"
+    ]
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "search_trait_text_ties",
+   "function": "search_gpmap",
+   "args": {
+    "search_text": "Haemoglobin"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "search_no_match",
+   "function": "search_gpmap",
+   "args": {
+    "search_text": "no-such-trait-anywhere"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "search_variant_proxies",
+   "function": "search_gpmap",
+   "args": {
+    "search_text": "rs28971325"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_column_args",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "My uploaded GWAS",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "compare_with_upload_guids": [
+     "11111111-2222-3333-4444-555555555555"
+    ],
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "eaf_col": "eaf",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_categorical",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "variable_type": "categorical",
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_deprecated_category",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "category": "categorical",
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_invalid_variable_type",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "variable_type": "binary",
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_legacy_column_names",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "My uploaded GWAS",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "column_names": {
+     "chr": "chr",
+     "BP": "pos",
+     "EA": "ea",
+     "OA": "oa",
+     "P": "p",
+     "BETA": "beta",
+     "SE": "se"
+    }
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_missing_p_col",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_beta_without_se",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "beta_col": "beta"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_column_not_in_file",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "pval",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_both_column_styles",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "column_names": {
+     "CHR": "chr"
+    },
+    "chr_col": "chr"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_unknown_legacy_column",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "column_names": {
+     "CHR": "chr",
+     "POS": "pos"
+    }
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "upload_gwas_bad_compare_guids",
+   "function": "upload_gwas",
+   "args": {
+    "file": "{fixtures}/files/gwas.tsv",
+    "name": "test",
+    "email": "user@example.com",
+    "sample_size": 1000,
+    "compare_with_upload_guids": [
+     "not-a-guid"
+    ],
+    "chr_col": "chr",
+    "bp_col": "pos",
+    "ea_col": "ea",
+    "oa_col": "oa",
+    "p_col": "p",
+    "beta_col": "beta",
+    "se_col": "se"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "delete_gwas",
+   "function": "delete_gwas",
+   "args": {
+    "gwas_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "email": "user@example.com"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "delete_gwas_not_found",
+   "function": "delete_gwas",
+   "args": {
+    "gwas_id": "00000000-0000-0000-0000-000000000000",
+    "email": "user@example.com"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "delete_gwas_bad_guid",
+   "function": "delete_gwas",
+   "args": {
+    "gwas_id": "not-a-guid",
+    "email": "user@example.com"
+   },
+   "fixtures": "edge"
+  },
+  {
+   "id": "delete_gwas_blank_email",
+   "function": "delete_gwas",
+   "args": {
+    "gwas_id": "0f0e0d0c-0b0a-4908-8706-050403020100",
+    "email": ""
+   },
+   "fixtures": "edge"
+  }
+ ]
 }

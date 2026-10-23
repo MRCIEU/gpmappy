@@ -1,0 +1,7 @@
+{
+  "id": "upload_gwas_invalid_variable_type",
+  "function": "upload_gwas",
+  "requests": [],
+  "warnings": [],
+  "error": "variable_type must be \"continuous\" or \"categorical\""
+}

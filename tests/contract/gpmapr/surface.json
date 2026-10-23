@@ -1,6 +1,9 @@
 {
   "package": "gpmapr",
-  "version": "0.0.2.0",
+  "version": "0.1.1",
+  "api_versions": [
+    "1.1.0"
+  ],
   "exports": [
     {
       "name": "all_genes",
@@ -21,6 +24,23 @@
         },
         {
           "name": "study_ids",
+          "required": true,
+          "default": null,
+          "r_default": null
+        }
+      ]
+    },
+    {
+      "name": "compare_upload",
+      "params": [
+        {
+          "name": "upload",
+          "required": true,
+          "default": null,
+          "r_default": null
+        },
+        {
+          "name": "trait_id",
           "required": true,
           "default": null,
           "r_default": null
@@ -144,6 +164,10 @@
           "r_default": "FALSE"
         }
       ]
+    },
+    {
+      "name": "gpmap_available",
+      "params": []
     },
     {
       "name": "health_api",
@@ -319,7 +343,7 @@
           "r_default": "NA"
         },
         {
-          "name": "category",
+          "name": "variable_type",
           "required": false,
           "default": "continuous",
           "r_default": "\"continuous\""
@@ -440,6 +464,12 @@
         },
         {
           "name": "rsid_col",
+          "required": false,
+          "default": null,
+          "r_default": "NULL"
+        },
+        {
+          "name": "category",
           "required": false,
           "default": null,
           "r_default": "NULL"

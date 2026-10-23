@@ -38,10 +38,13 @@ twine check dist/*
 - TestPyPI (manual):
   - Run workflow `Publish`
   - Choose input `repository=testpypi`
-- PyPI:
-  - Create and push a tag like `v0.1.0`
-  - Workflow auto-builds and publishes to PyPI
-  - Alternatively run manual dispatch with `repository=pypi`
+- PyPI (automatic): merge a version bump into `main`
+  - When `pyproject.toml` has a version with no `v<version>` tag yet, the workflow tags the
+    merge commit, creates the GitHub release (notes from that version's `CHANGELOG.md`
+    section), then builds and publishes to PyPI
+  - Pushes to `main` that don't change the version publish nothing
+  - So only merge a version bump when you mean to release it
+- PyPI (manual): run manual dispatch with `repository=pypi` (no tag or GitHub release)
 
 ## Install test
 

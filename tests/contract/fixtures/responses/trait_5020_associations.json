@@ -2,7 +2,7 @@
  "trait": {
   "id": 5020,
   "data_type": "Phenotype",
-  "trait": "ukb-d-M13-FIBROBLASTIC",
+  "pipeline_id": "ukb-d-M13-FIBROBLASTIC",
   "trait_name": "Fibroblastic disorders",
   "trait_category": "Disease Of Musculoskeletal System And Connective Tissue",
   "common_study": {
@@ -12,7 +12,7 @@
    "trait_id": 5020,
    "ancestry": "EUR",
    "sample_size": 361194,
-   "category": "categorical",
+   "variable_type": "categorical",
    "probe": null,
    "tissue": null,
    "cell_type": null,
@@ -33,7 +33,7 @@
    "trait_id": 5020,
    "ancestry": "EUR",
    "sample_size": 142446,
-   "category": "categorical",
+   "variable_type": "categorical",
    "probe": null,
    "tissue": null,
    "cell_type": null,
@@ -255,7 +255,6 @@
    "cell_type": null
   }
  ],
- "upload_study_extractions": null,
  "associations": [
   {
    "variant_id": 5553677,
@@ -287,11 +286,11 @@
   {
    "variant_id": 11476840,
    "study_id": 53116,
-   "beta": 1.9502151012420654,
-   "se": 0.3441126048564911,
-   "p": 1.033e-05,
-   "eaf": 0.00026649999199435115,
-   "imputed": false
+   "beta": 0,
+   "se": 1,
+   "p": 1,
+   "eaf": 0.27,
+   "imputed": true
   },
   {
    "variant_id": 5553677,

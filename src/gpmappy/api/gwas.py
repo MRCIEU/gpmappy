@@ -41,7 +41,7 @@ def upload_gwas_api(  # noqa: PLR0913
     p_value_threshold: float,
     column_names: dict[str, str],
     email: str,
-    category: str,
+    variable_type: str,
     is_published: bool,
     doi: str | None,
     should_be_added: bool,
@@ -54,7 +54,7 @@ def upload_gwas_api(  # noqa: PLR0913
         "reference_build": reference_build,
         "email": email,
         "name": name,
-        "category": category,
+        "variable_type": variable_type,
         "is_published": is_published,
         "doi": doi,
         "should_be_added": should_be_added,
@@ -81,15 +81,5 @@ def delete_gwas_api(
         return transport.request_json("DELETE", f"/v1/gwas/{guid}", json_body={"email": email})
     except ApiError as exc:
         raise ApiError(
-            exc.status_code, f"Failed to delete GWAS upload {guid}: {_error_detail(exc.message)}"
+            exc.status_code, f"Failed to delete GWAS upload {guid}: {exc.detail}", exc.detail
         ) from exc
-
-
-def _error_detail(message: str) -> str:
-    try:
-        payload = json.loads(message)
-    except json.JSONDecodeError:
-        return message
-    if isinstance(payload, dict) and payload.get("detail"):
-        return str(payload["detail"])
-    return message

@@ -3,7 +3,7 @@
   {
    "id": 4405,
    "data_type": "Phenotype",
-   "trait": "ukb-b-8416",
+   "pipeline_id": "ukb-b-8416",
    "trait_name": "Type of cancer: ICD10: C44.9 Malignant neoplasm of skin, unspecified",
    "trait_category": "Neoplasm",
    "common_study": {
@@ -13,7 +13,7 @@
     "trait_id": 4405,
     "ancestry": "EUR",
     "sample_size": 463010,
-    "category": "categorical",
+    "variable_type": "categorical",
     "probe": null,
     "tissue": null,
     "cell_type": null,
@@ -36,7 +36,7 @@
   {
    "id": 4872,
    "data_type": "Phenotype",
-   "trait": "ukb-d-C3-SKIN",
+   "pipeline_id": "ukb-d-C3-SKIN",
    "trait_name": "Malignant neoplasm of skin",
    "trait_category": "Neoplasm",
    "common_study": {
@@ -46,7 +46,7 @@
     "trait_id": 4872,
     "ancestry": "EUR",
     "sample_size": 361194,
-    "category": "categorical",
+    "variable_type": "categorical",
     "probe": null,
     "tissue": null,
     "cell_type": null,

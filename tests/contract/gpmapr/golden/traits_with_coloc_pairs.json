@@ -35,7 +35,7 @@
           "common_study",
           "data_type",
           "id",
-          "trait",
+          "pipeline_id",
           "trait_category",
           "trait_name"
         ],
@@ -43,7 +43,7 @@
           {
             "id": 4405,
             "data_type": "Phenotype",
-            "trait": "ukb-b-8416",
+            "pipeline_id": "ukb-b-8416",
             "trait_name": "Type of cancer: ICD10: C44.9 Malignant neoplasm of skin, unspecified",
             "trait_category": "Neoplasm",
             "common_study": {
@@ -55,7 +55,7 @@
                 "trait_id": 4405,
                 "ancestry": "EUR",
                 "sample_size": 463010,
-                "category": "categorical",
+                "variable_type": "categorical",
                 "source_id": 5,
                 "variant_type": "Common",
                 "p_value_threshold": 0.00015,
@@ -66,7 +66,7 @@
           {
             "id": 4872,
             "data_type": "Phenotype",
-            "trait": "ukb-d-C3-SKIN",
+            "pipeline_id": "ukb-d-C3-SKIN",
             "trait_name": "Malignant neoplasm of skin",
             "trait_category": "Neoplasm",
             "common_study": {
@@ -78,7 +78,7 @@
                 "trait_id": 4872,
                 "ancestry": "EUR",
                 "sample_size": 361194,
-                "category": "categorical",
+                "variable_type": "categorical",
                 "source_id": 5,
                 "variant_type": "Common",
                 "p_value_threshold": 0.00015,
@@ -208,10 +208,6 @@
           }
         ]
       },
-      "rare_results": {
-        "kind": "list",
-        "items": []
-      },
       "study_extractions": {
         "kind": "table",
         "columns": [
@@ -280,56 +276,6 @@
             "trait_name": "Type of cancer: ICD10: C44.9 Malignant neoplasm of skin, unspecified",
             "trait_category": "Neoplasm",
             "data_type": "Phenotype"
-          }
-        ]
-      },
-      "associations": {
-        "kind": "table",
-        "columns": [
-          "beta",
-          "eaf",
-          "imputed",
-          "p",
-          "se",
-          "study_id",
-          "variant_id"
-        ],
-        "rows": [
-          {
-            "variant_id": 7644771,
-            "study_id": 2640294,
-            "beta": 0.165197998285294,
-            "se": 0.0146327996626496,
-            "p": 1.4771e-29,
-            "eaf": 0.0797690004110336,
-            "imputed": false
-          },
-          {
-            "variant_id": 7644771,
-            "study_id": 1623749,
-            "beta": 1.04559004306793,
-            "se": 0.0975252985954285,
-            "p": 8.09507e-27,
-            "eaf": 0.142637997865677,
-            "imputed": false
-          },
-          {
-            "variant_id": 7644771,
-            "study_id": 2640294,
-            "beta": 99,
-            "se": 0.0146327996626496,
-            "p": 1.4771e-29,
-            "eaf": 0.0797690004110336,
-            "imputed": false
-          },
-          {
-            "variant_id": 1,
-            "study_id": 1,
-            "beta": 0.5,
-            "se": 0.1,
-            "p": 0.01,
-            "eaf": 0.2,
-            "imputed": true
           }
         ]
       },

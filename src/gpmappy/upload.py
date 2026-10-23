@@ -40,7 +40,7 @@ def validate_upload_arguments(  # noqa: PLR0913
     name: str,
     p_value_threshold: float,
     email: str | None,
-    category: str,
+    variable_type: str,
     ancestry: str,
     sample_size: int | float | None,
     reference_build: str,
@@ -53,8 +53,8 @@ def validate_upload_arguments(  # noqa: PLR0913
         raise ValidationError("name is required")
     if not email:
         raise ValidationError("email is required")
-    if category not in {"continuous", "categorical"}:
-        raise ValidationError("category must be continuous or categorical")
+    if variable_type not in {"continuous", "categorical"}:
+        raise ValidationError('variable_type must be "continuous" or "categorical"')
     if ancestry not in {"EUR"}:
         raise ValidationError("ancestry must be EUR")
     if reference_build not in {"GRCh37", "GRCh38"}:
