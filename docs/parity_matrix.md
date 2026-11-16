@@ -1,6 +1,6 @@
 # gpmappy Parity Matrix
 
-Tracks gpmapr 1.0.0 (GPMap API 1.1.0). `tests/contract/test_parity_contract.py` enforces this table: every
+Tracks gpmapr 1.0.1 (GPMap API 1.1.0). `tests/contract/test_parity_contract.py` enforces this table: every
 gpmapr export must exist with the same parameters, and the scenarios in
 `tests/contract/scenarios.json` must produce the same requests and outputs (see
 [Parity contract](api_contract.md#parity-contract-with-gpmapr)).

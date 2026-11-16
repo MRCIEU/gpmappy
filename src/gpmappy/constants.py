@@ -15,7 +15,7 @@ DEV_BASE_URL = "http://localhost:8000"
 # GPMap API version -> the gpmappy versions that support it (as gpmapr's api_to_package_version).
 API_TO_PACKAGE_VERSION = {
     "1.0.1": ("0.1.0", "0.1.1"),
-    "1.1.0": ("1.0.0",),
+    "1.1.0": ("1.0.0", "1.0.1"),
 }
 API_VERSION_TIMEOUT_SECONDS = 10.0
 

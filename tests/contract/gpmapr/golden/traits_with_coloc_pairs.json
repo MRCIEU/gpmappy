@@ -14,6 +14,7 @@
       "method": "GET",
       "path": "/v1/traits/4405/coloc-pairs",
       "query": {
+        "format": "columnar",
         "h4_threshold": "0.8"
       }
     },
@@ -21,6 +22,7 @@
       "method": "GET",
       "path": "/v1/traits/4872/coloc-pairs",
       "query": {
+        "format": "columnar",
         "h4_threshold": "0.8"
       }
     }
@@ -300,9 +302,9 @@
             "ld_block_id": 11,
             "h3": 0.0620531365275383,
             "h4": 0.937702059745789,
-            "false_positive": 0,
-            "false_negative": 0,
-            "in_coloc_group": 1
+            "false_positive": false,
+            "false_negative": false,
+            "in_coloc_group": true
           },
           {
             "variant_id": 60872,
@@ -311,9 +313,9 @@
             "ld_block_id": 11,
             "h3": 0.0544190779328346,
             "h4": 0.945436298847198,
-            "false_positive": 0,
-            "false_negative": 0,
-            "in_coloc_group": 1
+            "false_positive": false,
+            "false_negative": false,
+            "in_coloc_group": true
           }
         ]
       }
