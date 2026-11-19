@@ -7,7 +7,7 @@ from typing import Any
 import httpx
 
 from gpmappy.transport import HttpTransport
-from gpmappy.utils import rows_to_records
+from gpmappy.utils import tabular_payload_to_records
 
 
 def traits_api(transport: HttpTransport) -> dict[str, Any]:
@@ -48,19 +48,16 @@ def trait_coloc_pairs_api(
     payload = transport.request_json(
         "GET",
         f"/v1/traits/{trait_id}/coloc-pairs",
-        params={"h4_threshold": h4_threshold},
+        params={"h4_threshold": h4_threshold, "format": "columnar"},
     )
-    return rows_to_records(
-        payload.get("coloc_pair_column_names") or [], payload.get("coloc_pair_rows") or []
-    )
+    return tabular_payload_to_records(payload, "coloc_pair")
 
 
 def trait_associations_full_api(
     transport: HttpTransport,
     trait_id: str | int,
 ) -> list[dict[str, Any]]:
-    payload = transport.request_json("GET", f"/v1/traits/{trait_id}/associations-full")
-    return rows_to_records(
-        payload.get("associations_full_column_names") or [],
-        payload.get("associations_full_rows") or [],
+    payload = transport.request_json(
+        "GET", f"/v1/traits/{trait_id}/associations-full", params={"format": "columnar"}
     )
+    return tabular_payload_to_records(payload, "associations_full")

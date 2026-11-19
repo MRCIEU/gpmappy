@@ -52,11 +52,14 @@ class FakeTransport:
         if path == "/v1/info/version":
             return {"version": "0.0.1"}
         if path.endswith("/coloc-pairs"):
-            return {"coloc_pair_column_names": ["variant_id", "h4"], "coloc_pair_rows": [[1, 0.9]]}
+            return {
+                "coloc_pair_column_names": ["variant_id", "h4"],
+                "coloc_pair_columns": {"variant_id": [1], "h4": [0.9]},
+            }
         if path.endswith("/associations-full"):
             return {
                 "associations_full_column_names": ["variant_id", "p"],
-                "associations_full_rows": [[1, 0.01]],
+                "associations_full_columns": {"variant_id": [1], "p": [0.01]},
             }
         return {"ok": True, "path": path}
 
@@ -92,6 +95,15 @@ def test_api_endpoints_cover_request_shapes() -> None:
     assert trait_duplicates_api(transport)["ok"]
     assert trait_coloc_pairs_api(transport, 1, 0.9) == [{"variant_id": 1, "h4": 0.9}]
     assert trait_associations_full_api(transport, 1) == [{"variant_id": 1, "p": 0.01}]
+    tabular_calls = {
+        path: kwargs["params"]
+        for _, path, kwargs in transport.calls
+        if path.endswith(("/coloc-pairs", "/associations-full"))
+    }
+    assert tabular_calls == {
+        "/v1/traits/1/coloc-pairs": {"h4_threshold": 0.9, "format": "columnar"},
+        "/v1/traits/1/associations-full": {"format": "columnar"},
+    }
 
     assert genes_api(transport)["ok"]
     assert specific_genes_api(transport, ["ENSG1"], include_trans=False)["ok"]

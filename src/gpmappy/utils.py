@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 from urllib.parse import urlencode
 
@@ -40,6 +40,28 @@ def build_multi_params(name: str, values: Iterable[str | int]) -> str:
     return urlencode(payload)
 
 
-def rows_to_records(columns: Sequence[str], rows: Sequence[Sequence[Any]]) -> list[dict[str, Any]]:
+def rows_to_records(columns: Sequence[str], rows: Iterable[Sequence[Any]]) -> list[dict[str, Any]]:
     """Turn the API's compact ``*_column_names`` + ``*_rows`` payloads into records."""
     return [dict(zip(columns, row)) for row in rows]
+
+
+def columns_to_records(
+    columns: Sequence[str], data: Mapping[str, Sequence[Any]]
+) -> list[dict[str, Any]]:
+    """Turn the API's columnar ``*_column_names`` + ``*_columns`` payloads into records."""
+    if not columns:
+        return []
+    return rows_to_records(columns, zip(*(data[column] for column in columns)))
+
+
+def tabular_payload_to_records(payload: Mapping[str, Any], prefix: str) -> list[dict[str, Any]]:
+    """Read a ``format=columnar`` payload (``<prefix>_columns``, one list per column) into records.
+
+    The row format (``<prefix>_rows``, one list per row), which an API without ``format``
+    support returns, is still read.
+    """
+    columns = payload.get(f"{prefix}_column_names") or []
+    data = payload.get(f"{prefix}_columns")
+    if data is not None:
+        return columns_to_records(columns, data)
+    return rows_to_records(columns, payload.get(f"{prefix}_rows") or [])

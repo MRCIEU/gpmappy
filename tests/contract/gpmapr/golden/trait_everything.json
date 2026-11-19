@@ -12,12 +12,15 @@
     {
       "method": "GET",
       "path": "/v1/traits/5020/associations-full",
-      "query": {}
+      "query": {
+        "format": "columnar"
+      }
     },
     {
       "method": "GET",
       "path": "/v1/traits/5020/coloc-pairs",
       "query": {
+        "format": "columnar",
         "h4_threshold": "0.8"
       }
     }
@@ -358,7 +361,7 @@
             "se": 0.00120198994409293,
             "p": 5.41389713698011e-05,
             "eaf": 0.00868044979870319,
-            "imputed": 0
+            "imputed": false
           },
           {
             "variant_id": 14664,
@@ -367,7 +370,7 @@
             "se": 0.000238417997024953,
             "p": 8.16732805245279e-05,
             "eaf": 0.688557982444763,
-            "imputed": 0
+            "imputed": false
           },
           {
             "variant_id": 80717,
@@ -376,12 +379,12 @@
             "se": 0.00241099996492267,
             "p": 2.18997925035305e-10,
             "eaf": 0.176053002476692,
-            "imputed": 0
+            "imputed": false
           },
           {
             "variant_id": 80717,
             "study_id": 932,
-            "imputed": 1
+            "imputed": true
           }
         ]
       },
@@ -406,9 +409,9 @@
             "ld_block_id": 15,
             "h3": 0.0301371403038502,
             "h4": 0.969862878322601,
-            "false_positive": 0,
-            "false_negative": 0,
-            "in_coloc_group": 1
+            "false_positive": false,
+            "false_negative": false,
+            "in_coloc_group": true
           },
           {
             "variant_id": 80732,
@@ -417,9 +420,9 @@
             "ld_block_id": 15,
             "h3": 0.0303822588175535,
             "h4": 0.96961772441864,
-            "false_positive": 0,
-            "false_negative": 0,
-            "in_coloc_group": 1
+            "false_positive": false,
+            "false_negative": false,
+            "in_coloc_group": true
           },
           {
             "variant_id": 80732,
@@ -428,9 +431,9 @@
             "ld_block_id": 15,
             "h3": 0.0323493517935276,
             "h4": 0.967650651931763,
-            "false_positive": 0,
-            "false_negative": 0,
-            "in_coloc_group": 1
+            "false_positive": false,
+            "false_negative": false,
+            "in_coloc_group": true
           }
         ]
       }

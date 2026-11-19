@@ -12,7 +12,9 @@
     {
       "method": "GET",
       "path": "/v1/traits/5020/associations-full",
-      "query": {}
+      "query": {
+        "format": "columnar"
+      }
     }
   ],
   "warnings": [],
@@ -376,7 +378,7 @@
             "se": 0.00241099996492267,
             "p": 2.18997925035305e-10,
             "eaf": 0.176053002476692,
-            "imputed": 0
+            "imputed": false
           },
           {
             "variant_id": 80717,
@@ -385,7 +387,7 @@
             "se": 0.00245100003667176,
             "p": 2.59000140694793e-29,
             "eaf": 0.176746994256973,
-            "imputed": 0
+            "imputed": false
           },
           {
             "variant_id": 80717,
@@ -394,7 +396,7 @@
             "se": 0.00278408010490239,
             "p": 1.99986186963274e-32,
             "eaf": 0.176420003175735,
-            "imputed": 0
+            "imputed": false
           }
         ]
       }

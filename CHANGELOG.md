@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1
+
+Follows gpmapr 1.0.1. Requires version 1.1.0 of the GPMap API.
+
+- `trait()` and `traits()` now request coloc pairs and full associations in the API's
+  columnar format (`format=columnar`), which is smaller and faster to serialise and parse
+  for large traits. The returned records and dataframes are unchanged; the row format is
+  still read if an API returns it.
+
 ## 1.0.0
 
 Brings gpmappy in line with gpmapr 1.0.0. **Requires version 1.1.0 of the GPMap API.**

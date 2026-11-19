@@ -57,6 +57,12 @@ def test_a_supported_api_version_passes_and_is_checked_once(
     assert paths == ["/v1/info/version", "/v1/traits", "/v1/genes"]
 
 
+def test_gpmappy_1_0_1_supports_api_1_1_0(monkeypatch: pytest.MonkeyPatch) -> None:
+    transport, paths = gated_transport(monkeypatch, "1.1.0", "1.0.1")
+    transport.request_json("GET", "/v1/traits")
+    assert paths == ["/v1/info/version", "/v1/traits"]
+
+
 @pytest.mark.parametrize(
     ("api_version", "package"), [("1.0.1", "1.0.0"), ("1.1.0", "0.1.1"), ("99.0.0", "1.0.0")]
 )
